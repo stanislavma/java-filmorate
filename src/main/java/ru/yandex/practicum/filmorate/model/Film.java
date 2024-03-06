@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+
 /**
  * Film.
  */
@@ -23,5 +24,4 @@ public class Film {
 
     @Positive(message = "Must be positive number")
     private short duration;
-
 }
