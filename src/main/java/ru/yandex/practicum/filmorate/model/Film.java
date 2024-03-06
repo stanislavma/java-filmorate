@@ -1,16 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.*;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
-
 /**
  * Film.
  */
 @Data
+@Builder
 public class Film {
     private int id;
 

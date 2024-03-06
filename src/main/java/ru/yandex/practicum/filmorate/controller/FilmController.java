@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.exception.InvalidNameException;
 import ru.yandex.practicum.filmorate.controller.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -26,7 +25,7 @@ public class FilmController {
 
     @PostMapping()
     public ResponseEntity<?> add(@Valid @RequestBody Film film) {
-        log.info(String.valueOf(film));
+        log.info("Добавление фильма");
 
         try {
             if (film.getReleaseDate().isBefore(MIN_FILM_DATE)) {
@@ -41,11 +40,15 @@ public class FilmController {
         filmsByNameMap.put(film.getName(), film);
         filmsByIdMap.put(film.getId(), film);
 
+        log.info("Фильм успешно добавлен");
+
         return respondSuccess(film);
     }
 
     @PutMapping()
     public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
+        log.info("Обновление фильма");
+
         try {
             if (!filmsByIdMap.containsKey(film.getId())) {
                 throw new ValidationException("Id фильма не найден", HttpStatus.NOT_FOUND);
@@ -60,6 +63,8 @@ public class FilmController {
         filmsByNameMap.put(film.getName(), film);
 
         filmsByIdMap.put(film.getId(), film);
+
+        log.info("Фильм успешно обновлен");
 
         return respondSuccess(film);
     }
