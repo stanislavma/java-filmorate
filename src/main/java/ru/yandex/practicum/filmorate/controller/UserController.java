@@ -38,7 +38,7 @@ public class UserController {
         }
 
         user.setId(nextId());
-        usersByLoginMap.put(user.getName(), user);
+        usersByLoginMap.put(user.getLogin(), user);
         usersByIdMap.put(user.getId(), user);
 
         log.info("Пользователь успешно добавлен");
@@ -59,8 +59,8 @@ public class UserController {
             return respondError(user, HttpStatus.NOT_FOUND);
         }
 
-        String oldUserNameKey = usersByIdMap.get(user.getId()).getName();
-        usersByLoginMap.remove(oldUserNameKey);
+        String oldUserLoginKey = usersByIdMap.get(user.getId()).getLogin();
+        usersByLoginMap.remove(oldUserLoginKey);
         usersByLoginMap.put(user.getName(), user);
 
         usersByIdMap.put(user.getId(), user);
