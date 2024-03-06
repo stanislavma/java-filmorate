@@ -11,15 +11,15 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("films")
 public class FilmController {
-    Map<String, Film> filmsByNameMap = new HashMap<>();
-    Map<Integer, Film> filmsByIdMap = new HashMap<>();
+    Map<String, Film> filmsByNameMap = new LinkedHashMap<>();
+    Map<Integer, Film> filmsByIdMap = new LinkedHashMap<>();
     private int id;
     private static final LocalDate MIN_FILM_DATE = LocalDateTime.of(1895, 12, 28, 0, 0).toLocalDate();
 
