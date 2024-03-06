@@ -21,7 +21,7 @@ public class FilmController {
     Map<String, Film> filmsByNameMap = new HashMap<>();
     Map<Integer, Film> filmsByIdMap = new HashMap<>();
     private int id;
-    private final static LocalDate MIN_FILM_DATE = LocalDateTime.of(1895, 12, 28, 0, 0).toLocalDate();
+    private static final LocalDate MIN_FILM_DATE = LocalDateTime.of(1895, 12, 28, 0, 0).toLocalDate();
 
     @PostMapping()
     public ResponseEntity<?> add(@Valid @RequestBody Film film) {
