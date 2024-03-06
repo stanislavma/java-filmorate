@@ -9,15 +9,15 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("users")
 public class UserController {
-    Map<String, User> usersByLoginMap = new HashMap<>();
-    Map<Integer, User> usersByIdMap = new HashMap<>();
+    Map<String, User> usersByLoginMap = new LinkedHashMap<>();
+    Map<Integer, User> usersByIdMap = new LinkedHashMap<>();
     private int id;
 
     @PostMapping()
