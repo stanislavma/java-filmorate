@@ -16,12 +16,12 @@ public class Film {
     @NotEmpty
     private String name;
 
-    @Size(max = 200)
+    @Size(max = 200, message = "description must be less then 200 symbols")
     private String description;
 
     private LocalDate releaseDate;
 
-    @Positive
+    @Positive(message = "Must be positive number")
     private short duration;
 
 }
