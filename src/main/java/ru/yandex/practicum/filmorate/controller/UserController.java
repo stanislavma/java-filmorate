@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
@@ -16,20 +15,24 @@ import java.util.Map;
 @RestController
 @RequestMapping("users")
 public class UserController {
-    Map<String, User> usersByLoginMap = new LinkedHashMap<>();
-    Map<Integer, User> usersByIdMap = new LinkedHashMap<>();
+    private final Map<Integer, User> usersByIdMap = new LinkedHashMap<>();
     private int id;
 
     @PostMapping()
-    public ResponseEntity<?> add(@Valid @RequestBody User user) {
+    public ResponseEntity<User> add(@Valid @RequestBody User user) {
         log.info("Добавление пользователя");
 
-        try {
-            if (user.getLogin().contains("\\S+")) {
-                throw new ValidationException("Логин не может содержать пробелы", HttpStatus.BAD_REQUEST);
-            }
-        } catch (ValidationException e) {
-            log.error(e.getMessage());
+        if (user.getLogin().contains("\\S+")) {
+            log.error("Логин не может содержать пробелы");
+            return respondError(user, HttpStatus.BAD_REQUEST);
+        }
+
+        final String newUserLogin = user.getLogin();
+        boolean isLoginAlreadyExist = usersByIdMap.values().stream()
+                .anyMatch(oldUser -> oldUser.getLogin().equalsIgnoreCase(newUserLogin));
+
+        if (isLoginAlreadyExist) {
+            log.error("Пользователь с таким login уже существует");
             return respondError(user, HttpStatus.BAD_REQUEST);
         }
 
@@ -38,7 +41,6 @@ public class UserController {
         }
 
         user.setId(nextId());
-        usersByLoginMap.put(user.getLogin(), user);
         usersByIdMap.put(user.getId(), user);
 
         log.info("Пользователь успешно добавлен");
@@ -50,18 +52,19 @@ public class UserController {
     public ResponseEntity<User> update(@Valid @RequestBody User user) {
         log.info("Обновление пользователя");
 
-        try {
-            if (!usersByIdMap.containsKey(user.getId())) {
-                throw new ValidationException("Id фильма не найден", HttpStatus.NOT_FOUND);
-            }
-        } catch (ValidationException e) {
-            log.error(e.getMessage());
+        if (!usersByIdMap.containsKey(user.getId())) {
+            log.error("Id пользователя не найден");
             return respondError(user, HttpStatus.NOT_FOUND);
         }
 
-        String oldUserLoginKey = usersByIdMap.get(user.getId()).getLogin();
-        usersByLoginMap.remove(oldUserLoginKey);
-        usersByLoginMap.put(user.getName(), user);
+        final String newUserLogin = user.getLogin();
+        boolean isLoginAlreadyExist = usersByIdMap.values().stream()
+                .anyMatch(oldUser -> oldUser.getLogin().equalsIgnoreCase(newUserLogin));
+
+        if (isLoginAlreadyExist) {
+            log.error("Пользователь с таким login уже существует");
+            return respondError(user, HttpStatus.BAD_REQUEST);
+        }
 
         usersByIdMap.put(user.getId(), user);
 
@@ -72,9 +75,9 @@ public class UserController {
 
     @GetMapping()
     public ResponseEntity<Collection<User>> getAll() {
-        log.info("Текущее количество пользователей: " + usersByLoginMap.size());
+        log.info("Текущее количество пользователей: " + usersByIdMap.size());
 
-        return respondListSuccess(usersByLoginMap.values());
+        return respondListSuccess(usersByIdMap.values());
     }
 
     private int nextId() {

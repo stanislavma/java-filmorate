@@ -29,10 +29,10 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldAdd() throws Exception {
+    void add_shouldCreateUser() throws Exception {
         User user = User.builder()
-                .email("sm@gmail.com")
-                .login("sm")
+                .email("first@gmail.com")
+                .login("first")
                 .name("Stanislav")
                 .birthday(LocalDate.parse("1987-11-24"))
                 .build();
@@ -44,40 +44,48 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldUpdate() throws Exception {
-        shouldAdd();
+    void getAll_shouldReturnAllUsers() throws Exception {
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(3))); // Проверка, что добавлено 3 пользователя
+    }
 
+    @Test
+    void update_shouldEditUser() throws Exception {
         User user = User.builder()
-                .id(1)
-                .email("sm999@gmail.com")
-                .login("sm999")
-                .name("Stanislav999")
+                .email("second@gmail.com")
+                .login("second")
+                .name("Stanislav")
+                .birthday(LocalDate.parse("1987-11-24"))
+                .build();
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isOk());
+
+        User updatingUser = User.builder()
+                .id(2)
+                .email("second_updated@gmail.com")
+                .login("sm_updated")
+                .name("Stanislav_updated")
                 .birthday(LocalDate.parse("1987-11-24"))
                 .build();
 
         mockMvc.perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
+                        .content(objectMapper.writeValueAsString(updatingUser)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Stanislav999"));
+                .andExpect(jsonPath("$.name").value("Stanislav_updated"));
 
     }
 
     @Test
-    void shouldGet() throws Exception {
-        shouldAdd();
-
-        mockMvc.perform(get("/users"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(1))); // Проверка, что добавлен 1 пользователь
-    }
-
-    @Test
-    void emailShouldBeValid() throws Exception {
+    void add_shouldBadRequest_notValidEmailFormat() throws Exception {
         User user = User.builder()
                 .email("sm")
-                .login("sm")
+                .login("sm_validation_email")
                 .name("Stanislav")
                 .birthday(LocalDate.parse("1987-11-24"))
                 .build();
@@ -89,7 +97,7 @@ class UserControllerTest {
     }
 
     @Test
-    void loginShouldNotBeNull() throws Exception {
+    void add_shouldBadRequest_loginIsNull() throws Exception {
         User user = User.builder()
                 .email("sm@gmail.com")
                 .name("Stanislav")
@@ -103,7 +111,7 @@ class UserControllerTest {
     }
 
     @Test
-    void loginShouldNotBeEmpty() throws Exception {
+    void add_shouldBadRequest_loginIsEmpty() throws Exception {
         User user = User.builder()
                 .email("sm@gmail.com")
                 .login("")
@@ -118,10 +126,10 @@ class UserControllerTest {
     }
 
     @Test
-    void loginShouldBeUseIfNameIsEmpty() throws Exception {
+    void getAll_loginShouldBeUsedIfNameIsEmpty() throws Exception {
         User user = User.builder()
-                .email("sm@gmail.com")
-                .login("sm")
+                .email("third@gmail.com")
+                .login("third")
                 .birthday(LocalDate.parse("1987-11-24"))
                 .build();
 
@@ -129,14 +137,14 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("sm"));
+                .andExpect(jsonPath("$.name").value("third"));
     }
 
     @Test
-    void birthdayShouldBeInPastTime() throws Exception {
+    void add_shouldBadRequest_birthdayInFutureTime() throws Exception {
         User user = User.builder()
-                .email("sm@gmail.com")
-                .login("sm")
+                .email("forth@gmail.com")
+                .login("forth")
                 .name("Stanislav")
                 .birthday(LocalDate.parse("2555-11-24"))
                 .build();

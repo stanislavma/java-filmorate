@@ -29,7 +29,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void shouldAdd() throws Exception {
+    void add_shouldCreateFilm() throws Exception {
         Film film = Film.builder()
                 .name("Брат 2")
                 .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
@@ -44,11 +44,19 @@ class FilmControllerTest {
     }
 
     @Test
-    void shouldUpdate() throws Exception {
-        shouldAdd();
+    void getAll_shouldReturnAllFilms() throws Exception {
+        mockMvc.perform(get("/films"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2))); // Проверка, что добавлено 2 фильма
+    }
+
+    @Test
+    void update_shouldEditFilm() throws Exception {
+        add_shouldCreateFilm();
 
         Film film = Film.builder()
-                .id(1)
+                .id(2)
                 .name("Брат 2")
                 .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
                 .releaseDate(LocalDate.parse("2000-03-26"))
@@ -64,17 +72,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void shouldGet() throws Exception {
-        shouldAdd();
-
-        mockMvc.perform(get("/films"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(1))); // Проверка, что добавлен 1 фильм
-    }
-
-    @Test
-    void nameShouldNotBeEmpty() throws Exception {
+    void add_shouldBadRequest_nameIsNull() throws Exception {
         Film film = Film.builder()
                 .name("")
                 .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
@@ -89,7 +87,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void maxDescriptionLengthShouldBeLessThan200() throws Exception {
+    void add_shouldBadRequest_maxDescriptionLengthMore200() throws Exception {
         Film film = Film.builder()
                 .name("Брат 2")
                 .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
@@ -104,7 +102,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void releaseDateShouldBeLater1895Year() throws Exception {
+    void add_shouldBadRequest_releaseDateLater1895Year() throws Exception {
         Film film = Film.builder()
                 .name("Брат 2")
                 .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
@@ -119,7 +117,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void durationMustBePositive() throws Exception {
+    void add_shouldBadRequest_durationIsNegative() throws Exception {
         Film film = Film.builder()
                 .name("Брат 2")
                 .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком.")

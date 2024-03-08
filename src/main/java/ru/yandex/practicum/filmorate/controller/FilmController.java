@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
@@ -18,26 +17,20 @@ import java.util.Map;
 @RestController
 @RequestMapping("films")
 public class FilmController {
-    Map<String, Film> filmsByNameMap = new LinkedHashMap<>();
-    Map<Integer, Film> filmsByIdMap = new LinkedHashMap<>();
+    private final Map<Integer, Film> filmsByIdMap = new LinkedHashMap<>();
     private int id;
     private static final LocalDate MIN_FILM_DATE = LocalDateTime.of(1895, 12, 28, 0, 0).toLocalDate();
 
     @PostMapping()
-    public ResponseEntity<?> add(@Valid @RequestBody Film film) {
+    public ResponseEntity<Film> add(@Valid @RequestBody Film film) {
         log.info("Добавление фильма");
 
-        try {
-            if (film.getReleaseDate().isBefore(MIN_FILM_DATE)) {
-                throw new ValidationException("Дата релиза фильма позднее 28 декабря 1895", HttpStatus.BAD_REQUEST);
-            }
-        } catch (ValidationException e) {
-            log.error(e.getMessage());
+        if (film.getReleaseDate().isBefore(MIN_FILM_DATE)) {
+            log.error("Дата релиза фильма позднее 28 декабря 1895");
             return respondError(film, HttpStatus.BAD_REQUEST);
         }
 
         film.setId(nextId());
-        filmsByNameMap.put(film.getName(), film);
         filmsByIdMap.put(film.getId(), film);
 
         log.info("Фильм успешно добавлен");
@@ -49,18 +42,10 @@ public class FilmController {
     public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
         log.info("Обновление фильма");
 
-        try {
-            if (!filmsByIdMap.containsKey(film.getId())) {
-                throw new ValidationException("Id фильма не найден", HttpStatus.NOT_FOUND);
-            }
-        } catch (ValidationException e) {
-            log.error(e.getMessage());
+        if (!filmsByIdMap.containsKey(film.getId())) {
+            log.error("Id фильма не найден");
             return respondError(film, HttpStatus.NOT_FOUND);
         }
-
-        String oldFilmNameKey = filmsByIdMap.get(film.getId()).getName();
-        filmsByNameMap.remove(oldFilmNameKey);
-        filmsByNameMap.put(film.getName(), film);
 
         filmsByIdMap.put(film.getId(), film);
 
@@ -71,9 +56,9 @@ public class FilmController {
 
     @GetMapping()
     public ResponseEntity<Collection<Film>> getAll() {
-        log.info("Текущее количество фильмов: " + filmsByNameMap.size());
+        log.info("Текущее количество фильмов: " + filmsByIdMap.size());
 
-        return respondListSuccess(filmsByNameMap.values());
+        return respondListSuccess(filmsByIdMap.values());
     }
 
     private int nextId() {

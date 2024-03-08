@@ -12,19 +12,19 @@ import java.time.LocalDate;
 @Data
 @Builder(toBuilder = true)
 public class User {
-    int id;
+    private Integer id;
 
     @Email
     @NotNull
-    String email;
+    private String email;
 
     @NotNull
     @NotEmpty
-    String login;
+    private String login;
 
     @Builder.Default
-    String name = "";
+    private String name = "";
 
     @PastOrPresent
-    LocalDate birthday;
+    private LocalDate birthday;
 }

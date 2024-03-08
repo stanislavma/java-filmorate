@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class Film {
-    private int id;
+    private Integer id;
 
     @NotEmpty
     private String name;
@@ -23,5 +23,5 @@ public class Film {
     private LocalDate releaseDate;
 
     @Positive(message = "Must be positive number")
-    private short duration;
+    private Short duration;
 }
