@@ -21,7 +21,6 @@ import static ru.yandex.practicum.filmorate.util.ResponseUtil.respondSuccess;
 @RequestMapping("films")
 public class FilmController {
     private final FilmService filmService;
-    private static final LocalDate MIN_FILM_DATE = LocalDateTime.of(1895, 12, 28, 0, 0).toLocalDate();
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -32,11 +31,6 @@ public class FilmController {
     public ResponseEntity<Film> add(@Valid @RequestBody Film film) {
         log.info("Добавление фильма");
 
-        if (film.getReleaseDate().isBefore(MIN_FILM_DATE)) {
-            log.error("Дата релиза фильма позднее 28 декабря 1895");
-            return respondError(film, HttpStatus.BAD_REQUEST);
-        }
-
         Film addedFilm = filmService.add(film);
         log.info("Фильм успешно добавлен");
 
@@ -46,11 +40,6 @@ public class FilmController {
     @PutMapping()
     public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
         log.info("Обновление фильма");
-
-        if (!filmService.isExist(film.getId())) {
-            log.error("Id фильма не найден");
-            return respondError(film, HttpStatus.NOT_FOUND);
-        }
 
         Film updatedFilm = filmService.update(film);
 
