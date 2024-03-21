@@ -73,13 +73,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends/common/{friendId}")
-    public ResponseEntity<User> getCommonFriends(@PathVariable long id, @PathVariable long friendId) {
+    public ResponseEntity<Collection<User>> getCommonFriends(@PathVariable long id, @PathVariable long friendId) {
         log.info("Общие друзья пользователей {} и {}", id, friendId);
 
-        User updatedUser = userService.getCommonFriends(id, friendId);
-        log.info("Друг успешно удален");
+        Collection<User> commonUsers = userService.getCommonFriends(id, friendId);
+        log.info("Общие друзья успешно получены");
 
-        return respondSuccess(updatedUser);
+        return respondSuccessList(commonUsers);
     }
 
 }
