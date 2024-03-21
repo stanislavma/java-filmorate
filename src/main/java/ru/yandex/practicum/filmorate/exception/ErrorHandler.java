@@ -22,4 +22,4 @@ public class ErrorHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-} 
+}
