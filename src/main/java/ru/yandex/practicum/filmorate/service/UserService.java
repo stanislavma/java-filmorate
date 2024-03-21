@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -60,6 +61,18 @@ public class UserService {
         return userStorage.deleteFriend(id, friendId);
     }
 
+    public Collection<User> getUserFriends(long id) {
+        validateIsExist(id);
+
+        User user = userStorage.getById(id);
+
+        Set<Long> userFriends = user.getFriends();
+
+        return userFriends.stream()
+                .map(userStorage::getById)
+                .collect(Collectors.toSet());
+    }
+
     public Collection<User> getCommonFriends(long id, long friendId) {
         validateIsExist(id);
         validateIsExist(friendId);
@@ -71,12 +84,10 @@ public class UserService {
         Set<Long> firstUserFriends = user.getFriends();
         Set<Long> secondUserFriends = friendUser.getFriends();
 
-        Set<User> commonFriends = firstUserFriends.stream()
+        return firstUserFriends.stream()
                 .filter(secondUserFriends::contains)
                 .map(userStorage::getById)
                 .collect(Collectors.toSet());
-
-        return commonFriends;
     }
 
     /**
@@ -108,11 +119,11 @@ public class UserService {
         }
     }
 
-    private void validateIsExist(long id) {
+    protected void validateIsExist(long id) {
         if (!userStorage.isExist(id)) {
             String errorText = "Пользователь с таким Id не найден: " + id;
             log.error(errorText);
-            throw new ValidationException(errorText, HttpStatus.NOT_FOUND);
+            throw new EntityNotFoundException(errorText);
         }
     }
 

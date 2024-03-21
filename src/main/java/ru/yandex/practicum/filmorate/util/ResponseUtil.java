@@ -22,10 +22,10 @@ public class ResponseUtil {
                 .body(body);
     }
 
-    public static <T> ResponseEntity<T> respondError(T body, HttpStatus httpStatus) {
-        return ResponseEntity
-                .status(httpStatus)
-                .body(body);
-    }
+//    public static <T> ResponseEntity<T> respondError(T body, HttpStatus httpStatus) {
+//        return ResponseEntity
+//                .status(httpStatus)
+//                .body(body);
+//    }
 
 }

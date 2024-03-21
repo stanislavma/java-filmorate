@@ -72,6 +72,16 @@ public class UserController {
         return respondSuccess(updatedUser);
     }
 
+    @GetMapping("/{id}/friends")
+    public ResponseEntity<Collection<User>> getUserFriends(@PathVariable long id) {
+        log.info("Список друзей пользователя {}", id);
+
+        Collection<User> commonUsers = userService.getUserFriends(id);
+        log.info("Друзья пользователя успешно получены");
+
+        return respondSuccessList(commonUsers);
+    }
+
     @GetMapping("/{id}/friends/common/{friendId}")
     public ResponseEntity<Collection<User>> getCommonFriends(@PathVariable long id, @PathVariable long friendId) {
         log.info("Общие друзья пользователей {} и {}", id, friendId);

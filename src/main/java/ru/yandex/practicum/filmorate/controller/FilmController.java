@@ -52,4 +52,34 @@ public class FilmController {
         return respondSuccessList(filmService.getAll());
     }
 
+    @PutMapping("/{id}/like/{userId}")
+    public ResponseEntity<Film> addLike(@PathVariable long id, @PathVariable long userId) {
+        log.info("Пользователь {} ставит like фильму {}", userId, id);
+
+        Film updatedFilm = filmService.addLike(id, userId);
+        log.info("Like успешно поставлен");
+
+        return respondSuccess(updatedFilm);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public ResponseEntity<Film> deleteLike(@PathVariable long id, @PathVariable long userId) {
+        log.info("Пользователь {} удаляет like фильму {}", userId, id);
+
+        Film updatedFilm = filmService.deleteLike(id, userId);
+        log.info("Like успешно удален");
+
+        return respondSuccess(updatedFilm);
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<Collection<Film>> getMostLiked(@RequestParam(defaultValue = "10", required = false) Integer count) {
+        log.info("Получить список фильмов с наибольшим количеством лайков");
+
+        Collection<Film> films = filmService.getMostLiked(count);
+        log.info("Фильмы с наибольшим количеством лайков успешно получены");
+
+        return respondSuccess(films);
+    }
+
 }

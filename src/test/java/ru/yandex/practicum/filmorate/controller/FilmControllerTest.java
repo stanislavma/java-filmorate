@@ -37,9 +37,9 @@ class FilmControllerTest {
     @Test
     void add_shouldCreateFilm() throws Exception {
         Film film = Film.builder()
-                .name("Film name")
-                .description("Film description")
-                .releaseDate(LocalDate.parse("2022-03-25"))
+                .name("Film № 1")
+                .description("Film № 1")
+                .releaseDate(LocalDate.parse("2020-03-25"))
                 .duration((short) 112)
                 .build();
 
@@ -63,9 +63,9 @@ class FilmControllerTest {
 
         Film film = Film.builder()
                 .id(2L)
-                .name("Брат 2")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
-                .releaseDate(LocalDate.parse("2000-03-26"))
+                .name("Film № 1")
+                .description("Film № 1 description")
+                .releaseDate(LocalDate.parse("2020-03-26"))
                 .duration((short) 3333)
                 .build();
 
@@ -81,8 +81,8 @@ class FilmControllerTest {
     void add_shouldBadRequest_nameIsNull() throws Exception {
         Film film = Film.builder()
                 .name("")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
-                .releaseDate(LocalDate.parse("2000-03-25"))
+                .description("Film № 1")
+                .releaseDate(LocalDate.parse("2020-03-25"))
                 .duration((short) 127)
                 .build();
 
@@ -95,9 +95,9 @@ class FilmControllerTest {
     @Test
     void add_shouldBadRequest_maxDescriptionLengthMore200() throws Exception {
         Film film = Film.builder()
-                .name("Брат 2")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
-                .releaseDate(LocalDate.parse("2000-03-25"))
+                .name("Film № 1")
+                .description("Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description")
+                .releaseDate(LocalDate.parse("2020-03-25"))
                 .duration((short) 127)
                 .build();
 
@@ -110,10 +110,10 @@ class FilmControllerTest {
     @Test
     void add_shouldBadRequest_releaseDateLater1895Year() throws Exception {
         Film film = Film.builder()
-                .name("Брат 2")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
+                .name("Film № 1")
+                .description("Film № 1 description")
                 .releaseDate(LocalDate.parse("1800-03-25"))
-                .duration((short) 127)
+                .duration((short) 115)
                 .build();
 
         mockMvc.perform(post("/films")
@@ -125,9 +125,9 @@ class FilmControllerTest {
     @Test
     void add_shouldBadRequest_durationIsNegative() throws Exception {
         Film film = Film.builder()
-                .name("Брат 2")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком.")
-                .releaseDate(LocalDate.parse("2000-03-25"))
+                .name("Film № 1")
+                .description("Film № 1 description")
+                .releaseDate(LocalDate.parse("2020-03-25"))
                 .duration((short) -200)
                 .build();
 

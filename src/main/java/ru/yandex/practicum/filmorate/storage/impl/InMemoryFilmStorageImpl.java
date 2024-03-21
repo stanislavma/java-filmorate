@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class InMemoryFilmStorageImpl implements FilmStorage {
@@ -32,6 +33,27 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
     }
 
     @Override
+    public Film addLike(long id, long userId) {
+        Film film = filmsByIdMap.get(id);
+
+        Set<Long> likes = film.getLikes();
+        likes.add(userId);
+
+        filmsByIdMap.put(film.getId(), film);
+        return film;
+    }
+    @Override
+    public Film deleteLike(long id, long userId) {
+        Film film = filmsByIdMap.get(id);
+
+        Set<Long> likes = film.getLikes();
+        likes.remove(userId);
+
+        filmsByIdMap.put(film.getId(), film);
+        return film;
+    }
+
+    @Override
     public boolean isExist(long id) {
         return filmsByIdMap.containsKey(id);
     }
@@ -45,6 +67,7 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
     public Collection<Film> getAll() {
         return filmsByIdMap.values();
     }
+
 
     private long nextId() {
         return ++id;

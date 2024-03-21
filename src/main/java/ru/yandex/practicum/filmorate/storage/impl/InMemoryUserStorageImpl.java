@@ -35,13 +35,13 @@ public class InMemoryUserStorageImpl implements UserStorage {
 
     @Override
     public User addFriend(long id, long friendId) {
-        User user = addToFriend(id, friendId); // Добавить друга
-        addToFriend(friendId, id); // Добавить друга, взаимно
+        User user = addUserToFriend(id, friendId); // Добавить друга
+        addUserToFriend(friendId, id); // Добавить друга, взаимно
 
         return user;
     }
 
-    private User addToFriend(long id, long friendId) {
+    private User addUserToFriend(long id, long friendId) {
         User user = usersByIdMap.get(id);
 
         Set<Long> userFriends = user.getFriends();
