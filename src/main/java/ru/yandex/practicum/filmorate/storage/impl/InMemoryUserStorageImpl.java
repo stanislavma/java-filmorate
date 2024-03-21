@@ -11,9 +11,8 @@ import java.util.Set;
 
 @Component
 public class InMemoryUserStorageImpl implements UserStorage {
-    private final Map<Long, User> usersByIdMap = new LinkedHashMap<>();
-    //    private final Map<Long, Set<Long>> userFriendsIdMap = new LinkedHashMap<>();
     private long id;
+    private final Map<Long, User> usersByIdMap = new LinkedHashMap<>();
 
     @Override
     public User add(User user) {

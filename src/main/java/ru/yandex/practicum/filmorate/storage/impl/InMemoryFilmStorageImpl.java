@@ -11,8 +11,8 @@ import java.util.Set;
 
 @Component
 public class InMemoryFilmStorageImpl implements FilmStorage {
-    private final Map<Long, Film> filmsByIdMap = new LinkedHashMap<>();
     private long id;
+    private final Map<Long, Film> filmsByIdMap = new LinkedHashMap<>();
 
     @Override
     public Film add(Film film) {
@@ -42,6 +42,7 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
         filmsByIdMap.put(film.getId(), film);
         return film;
     }
+
     @Override
     public Film deleteLike(long id, long userId) {
         Film film = filmsByIdMap.get(id);
@@ -68,10 +69,8 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
         return filmsByIdMap.values();
     }
 
-
     private long nextId() {
         return ++id;
     }
-
 
 }
