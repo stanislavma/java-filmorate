@@ -57,7 +57,27 @@ public class UserController {
         log.info("Пользователь {} хочет добавить в друзья пользователя {}", id, friendId);
 
         User updatedUser = userService.addFriend(id, friendId);
-        log.info("Пользователь успешно обновлен");
+        log.info("Друг успешно добавлен");
+
+        return respondSuccess(updatedUser);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public ResponseEntity<User> deleteFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("Пользователь {} хочет удалить из друзей пользователя {}", id, friendId);
+
+        User updatedUser = userService.deleteFriend(id, friendId);
+        log.info("Друг успешно удален");
+
+        return respondSuccess(updatedUser);
+    }
+
+    @GetMapping("/{id}/friends/common/{friendId}")
+    public ResponseEntity<User> getCommonFriends(@PathVariable long id, @PathVariable long friendId) {
+        log.info("Общие друзья пользователей {} и {}", id, friendId);
+
+        User updatedUser = userService.getCommonFriends(id, friendId);
+        log.info("Друг успешно удален");
 
         return respondSuccess(updatedUser);
     }

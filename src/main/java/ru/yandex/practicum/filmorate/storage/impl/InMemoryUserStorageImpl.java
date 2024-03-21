@@ -35,8 +35,8 @@ public class InMemoryUserStorageImpl implements UserStorage {
 
     @Override
     public User addFriend(long id, long friendId) {
-        User user = addToFriend(id, friendId);
-        addToFriend(friendId, id); // Добавить друга взаимно
+        User user = addToFriend(id, friendId); // Добавить друга
+        addToFriend(friendId, id); // Добавить друга, взаимно
 
         return user;
     }
@@ -46,6 +46,24 @@ public class InMemoryUserStorageImpl implements UserStorage {
 
         Set<Long> userFriends = user.getFriends();
         userFriends.add(friendId);
+
+        usersByIdMap.put(user.getId(), user);
+        return user;
+    }
+
+    @Override
+    public User deleteFriend(long id, long friendId) {
+        User user = deleteFromFriend(id, friendId); // Добавить друга
+        deleteFromFriend(friendId, id); // Добавить друга, взаимно
+
+        return user;
+    }
+
+    private User deleteFromFriend(long id, long friendId) {
+        User user = usersByIdMap.get(id);
+
+        Set<Long> userFriends = user.getFriends();
+        userFriends.remove(friendId);
 
         usersByIdMap.put(user.getId(), user);
         return user;
@@ -64,6 +82,11 @@ public class InMemoryUserStorageImpl implements UserStorage {
     @Override
     public Collection<User> getAll() {
         return usersByIdMap.values();
+    }
+
+    @Override
+    public User getById(long id) {
+        return usersByIdMap.get(id);
     }
 
     private long nextId() {

@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -46,8 +48,35 @@ public class UserService {
     public User addFriend(long id, long friendId) {
         validateIsExist(id);
         validateIsExist(friendId);
+        validateSameUser(id, friendId);
 
         return userStorage.addFriend(id, friendId);
+    }
+
+    public User deleteFriend(long id, long friendId) {
+        validateIsExist(id);
+        validateIsExist(friendId);
+
+        return userStorage.deleteFriend(id, friendId);
+    }
+
+    public Collection<User> getCommonFriends(long id, long friendId) {
+        validateIsExist(id);
+        validateIsExist(friendId);
+        validateSameUser(id, friendId);
+
+        User user = userStorage.getById(id);
+        User friendUser = userStorage.getById(friendId);
+
+        Set<Long> firstUserFriends = user.getFriends();
+        Set<Long> secondUserFriends = friendUser.getFriends();
+
+        Set<User> commonFriends = firstUserFriends.stream()
+                .filter(secondUserFriends::contains)
+                .map(userStorage::getById)
+                .collect(Collectors.toSet());
+
+        return commonFriends;
     }
 
     /**
@@ -81,9 +110,17 @@ public class UserService {
 
     private void validateIsExist(long id) {
         if (!userStorage.isExist(id)) {
-            String errorText = "Пользователь с таким Id не найден: " +  id;
+            String errorText = "Пользователь с таким Id не найден: " + id;
             log.error(errorText);
             throw new ValidationException(errorText, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private void validateSameUser(long id, long friendId) {
+        if (id == friendId) {
+            String errorText = "Невозможно обработать запрос с одинаковыми id пользователей: " + id + ", " + friendId;
+            log.error(errorText);
+            throw new ValidationException(errorText, HttpStatus.BAD_REQUEST);
         }
     }
 
