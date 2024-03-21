@@ -10,11 +10,11 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    Film delete(int id);
+    Film delete(long id);
 
-    boolean isExist(Integer id);
+    boolean isExist(long id);
 
-    int getCount();
+    long getCount();
 
     Collection<Film> getAll();
 }

@@ -52,4 +52,14 @@ public class UserController {
         return respondSuccessList(userService.getAll());
     }
 
+    @PutMapping("/{id}/friends/{friendId}")
+    public ResponseEntity<User> addFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("Пользователь {} хочет добавить в друзья пользователя {}", id, friendId);
+
+        User updatedUser = userService.addFriend(id, friendId);
+        log.info("Пользователь успешно обновлен");
+
+        return respondSuccess(updatedUser);
+    }
+
 }

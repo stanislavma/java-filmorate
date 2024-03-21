@@ -69,7 +69,7 @@ class UserControllerTest {
                 .andExpect(status().isOk());
 
         User updatingUser = User.builder()
-                .id(2)
+                .id(2L)
                 .email("second_updated@gmail.com")
                 .login("sm_updated")
                 .name("Stanislav_updated")

@@ -7,11 +7,13 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class InMemoryUserStorageImpl implements UserStorage {
-    private final Map<Integer, User> usersByIdMap = new LinkedHashMap<>();
-    private int id;
+    private final Map<Long, User> usersByIdMap = new LinkedHashMap<>();
+    //    private final Map<Long, Set<Long>> userFriendsIdMap = new LinkedHashMap<>();
+    private long id;
 
     @Override
     public User add(User user) {
@@ -27,17 +29,35 @@ public class InMemoryUserStorageImpl implements UserStorage {
     }
 
     @Override
-    public User delete(int id) {
+    public User delete(long id) {
         return null;
     }
 
     @Override
-    public boolean isExist(Integer id) {
+    public User addFriend(long id, long friendId) {
+        User user = addToFriend(id, friendId);
+        addToFriend(friendId, id); // Добавить друга взаимно
+
+        return user;
+    }
+
+    private User addToFriend(long id, long friendId) {
+        User user = usersByIdMap.get(id);
+
+        Set<Long> userFriends = user.getFriends();
+        userFriends.add(friendId);
+
+        usersByIdMap.put(user.getId(), user);
+        return user;
+    }
+
+    @Override
+    public boolean isExist(long id) {
         return usersByIdMap.containsKey(id);
     }
 
     @Override
-    public int getCount() {
+    public long getCount() {
         return usersByIdMap.size();
     }
 
@@ -46,7 +66,7 @@ public class InMemoryUserStorageImpl implements UserStorage {
         return usersByIdMap.values();
     }
 
-    private int nextId() {
+    private long nextId() {
         return ++id;
     }
 

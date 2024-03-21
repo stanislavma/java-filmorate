@@ -10,8 +10,8 @@ import java.util.Map;
 
 @Component
 public class InMemoryFilmStorageImpl implements FilmStorage {
-    private final Map<Integer, Film> filmsByIdMap = new LinkedHashMap<>();
-    private int id;
+    private final Map<Long, Film> filmsByIdMap = new LinkedHashMap<>();
+    private long id;
 
     @Override
     public Film add(Film film) {
@@ -27,17 +27,17 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film delete(int id) {
+    public Film delete(long id) {
         return null;
     }
 
     @Override
-    public boolean isExist(Integer id) {
+    public boolean isExist(long id) {
         return filmsByIdMap.containsKey(id);
     }
 
     @Override
-    public int getCount() {
+    public long getCount() {
         return filmsByIdMap.size();
     }
 
@@ -46,7 +46,7 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
         return filmsByIdMap.values();
     }
 
-    private int nextId() {
+    private long nextId() {
         return ++id;
     }
 

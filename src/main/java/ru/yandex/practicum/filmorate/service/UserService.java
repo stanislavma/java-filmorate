@@ -13,7 +13,6 @@ import java.util.Collection;
 @Service
 @Slf4j
 public class UserService {
-
     private final UserStorage userStorage;
 
     @Autowired
@@ -36,16 +35,19 @@ public class UserService {
         return userStorage.update(user);
     }
 
-    public boolean isExist(Integer id) {
-        return userStorage.isExist(id);
-    }
-
-    public int getCount() {
+    public long getCount() {
         return userStorage.getCount();
     }
 
     public Collection<User> getAll() {
         return userStorage.getAll();
+    }
+
+    public User addFriend(long id, long friendId) {
+        validateIsExist(id);
+        validateIsExist(friendId);
+
+        return userStorage.addFriend(id, friendId);
     }
 
     /**
@@ -77,10 +79,10 @@ public class UserService {
         }
     }
 
-    private void validateIsExist(Integer id) {
+    private void validateIsExist(long id) {
         if (!userStorage.isExist(id)) {
-            String errorText = "Id фильма не найден: {}" + id;
-            log.error(errorText, id);
+            String errorText = "Пользователь с таким Id не найден: " +  id;
+            log.error(errorText);
             throw new ValidationException(errorText, HttpStatus.NOT_FOUND);
         }
     }

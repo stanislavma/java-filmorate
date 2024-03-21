@@ -9,11 +9,15 @@ public interface UserStorage {
 
     User update(User user);
 
-    User delete(int id);
+    User delete(long id);
 
-    boolean isExist(Integer id);
+    boolean isExist(long id);
 
-    int getCount();
+    long getCount();
 
     Collection<User> getAll();
+
+
+    User addFriend(long id, long friendId);
+
 }

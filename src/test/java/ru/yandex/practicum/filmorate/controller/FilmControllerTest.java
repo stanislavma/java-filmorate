@@ -62,7 +62,7 @@ class FilmControllerTest {
         add_shouldCreateFilm();
 
         Film film = Film.builder()
-                .id(2)
+                .id(2L)
                 .name("Брат 2")
                 .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
                 .releaseDate(LocalDate.parse("2000-03-26"))

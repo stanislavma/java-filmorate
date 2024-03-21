@@ -33,7 +33,7 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
-    public int getCount() {
+    public long getCount() {
         return filmStorage.getCount();
     }
 
@@ -41,7 +41,7 @@ public class FilmService {
         return filmStorage.getAll();
     }
 
-    private void validateIsExist(Integer id) {
+    private void validateIsExist(long id) {
         if (!filmStorage.isExist(id)) {
             log.error("Id фильма не найден: {}", id);
             throw new ValidationException("Id фильма не найден: " + id, HttpStatus.NOT_FOUND);
