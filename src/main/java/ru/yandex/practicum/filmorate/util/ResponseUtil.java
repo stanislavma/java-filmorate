@@ -5,6 +5,9 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Collection;
 
+/**
+ * Обобщенный класс для возврата ответов
+ */
 public class ResponseUtil {
 
     public static <T> ResponseEntity<T> respondSuccess(T body) {

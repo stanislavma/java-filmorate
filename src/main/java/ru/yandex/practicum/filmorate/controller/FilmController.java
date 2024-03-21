@@ -46,6 +46,7 @@ public class FilmController {
 
     @GetMapping()
     public ResponseEntity<Collection<Film>> getAll() {
+        log.info("Получить все фильмы");
         log.info("Текущее количество фильмов: " + filmService.getCount());
 
         return respondSuccessList(filmService.getAll());

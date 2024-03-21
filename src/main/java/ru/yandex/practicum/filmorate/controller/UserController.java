@@ -46,6 +46,7 @@ public class UserController {
 
     @GetMapping()
     public ResponseEntity<Collection<User>> getAll() {
+        log.info("Получить всех пользователей");
         log.info("Текущее количество пользователей: " + userService.getCount());
 
         return respondSuccessList(userService.getAll());
