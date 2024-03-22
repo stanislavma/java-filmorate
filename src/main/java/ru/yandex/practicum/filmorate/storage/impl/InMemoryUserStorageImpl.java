@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 public class InMemoryUserStorageImpl implements UserStorage {
@@ -30,52 +29,6 @@ public class InMemoryUserStorageImpl implements UserStorage {
     @Override
     public User delete(long id) {
         return null;
-    }
-
-    @Override
-    public User addFriend(long id, long friendId) {
-        User user = addUserToFriend(id, friendId); // Добавить друга
-        addUserToFriend(friendId, id); // Добавить друга, взаимно
-
-        return user;
-    }
-
-    private User addUserToFriend(long id, long friendId) {
-        User user = usersByIdMap.get(id);
-
-        Set<Long> userFriends = user.getFriends();
-        userFriends.add(friendId);
-
-        usersByIdMap.put(user.getId(), user);
-        return user;
-    }
-
-    @Override
-    public User deleteFriend(long id, long friendId) {
-        User user = deleteFromFriend(id, friendId); // Добавить друга
-        deleteFromFriend(friendId, id); // Добавить друга, взаимно
-
-        return user;
-    }
-
-    private User deleteFromFriend(long id, long friendId) {
-        User user = usersByIdMap.get(id);
-
-        Set<Long> userFriends = user.getFriends();
-        userFriends.remove(friendId);
-
-        usersByIdMap.put(user.getId(), user);
-        return user;
-    }
-
-    @Override
-    public boolean isExist(long id) {
-        return usersByIdMap.containsKey(id);
-    }
-
-    @Override
-    public long getCount() {
-        return usersByIdMap.size();
     }
 
     @Override

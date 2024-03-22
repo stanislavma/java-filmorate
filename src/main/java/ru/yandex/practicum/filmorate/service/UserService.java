@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
@@ -14,14 +14,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
-
-    @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
 
     public User add(User user) {
         validateLoginHasSpaces(user.getLogin());
@@ -39,7 +35,7 @@ public class UserService {
     }
 
     public long getCount() {
-        return userStorage.getCount();
+        return userStorage.getAll().size();
     }
 
     public Collection<User> getAll() {
@@ -51,14 +47,40 @@ public class UserService {
         validateIsExist(friendId);
         validateSameUser(id, friendId);
 
-        return userStorage.addFriend(id, friendId);
+        User user = addUserToFriend(id, friendId); // Добавить друга
+        addUserToFriend(friendId, id); // Добавить друга, взаимно
+
+        return user;
+    }
+
+    private User addUserToFriend(long id, long friendId) {
+        User user = userStorage.getById(id);
+
+        Set<Long> userFriends = user.getFriends();
+        userFriends.add(friendId);
+
+        userStorage.update(user);
+        return user;
     }
 
     public User deleteFriend(long id, long friendId) {
         validateIsExist(id);
         validateIsExist(friendId);
 
-        return userStorage.deleteFriend(id, friendId);
+        User user = deleteFromFriend(id, friendId); // Добавить друга
+        deleteFromFriend(friendId, id); // Добавить друга, взаимно
+
+        return user;
+    }
+
+    private User deleteFromFriend(long id, long friendId) {
+        User user = userStorage.getById(id);
+
+        Set<Long> userFriends = user.getFriends();
+        userFriends.remove(friendId);
+
+        userStorage.update(user);
+        return user;
     }
 
     public Collection<User> getUserFriends(long id) {
@@ -91,6 +113,14 @@ public class UserService {
     }
 
     /**
+     * Проверяет наличие пользователя с заданным id
+     */
+    private boolean isExist(long id) {
+        return userStorage.getAll().stream()
+                .anyMatch(user -> user.getId().equals(id));
+    }
+
+    /**
      * Если пользователь без имени, подставить в имя - логин
      */
     private User useLoginInsteadNameIfNull(User user) {
@@ -120,7 +150,7 @@ public class UserService {
     }
 
     protected void validateIsExist(long id) {
-        if (!userStorage.isExist(id)) {
+        if (!isExist(id)) {
             String errorText = "Пользователь с таким Id не найден: " + id;
             log.error(errorText);
             throw new EntityNotFoundException(errorText);

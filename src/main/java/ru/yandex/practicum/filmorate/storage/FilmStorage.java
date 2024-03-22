@@ -12,14 +12,8 @@ public interface FilmStorage {
 
     Film delete(long id);
 
-    boolean isExist(long id);
-
-    long getCount();
+    Film getById(long id);
 
     Collection<Film> getAll();
-
-    Film addLike(long id, long userId);
-
-    Film deleteLike(long id, long userId);
 
 }
