@@ -1,104 +1,91 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+
+import static ru.yandex.practicum.filmorate.util.ResponseUtil.respondSuccess;
+import static ru.yandex.practicum.filmorate.util.ResponseUtil.respondSuccessList;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("users")
 public class UserController {
-    private final Map<Integer, User> usersByIdMap = new LinkedHashMap<>();
-    private int id;
+    private final UserService userService;
 
     @PostMapping()
     public ResponseEntity<User> add(@Valid @RequestBody User user) {
         log.info("Добавление пользователя");
 
-        if (user.getLogin().contains("\\S+")) {
-            log.error("Логин не может содержать пробелы");
-            return respondError(user, HttpStatus.BAD_REQUEST);
-        }
-
-        final String newUserLogin = user.getLogin();
-        boolean isLoginAlreadyExist = usersByIdMap.values().stream()
-                .anyMatch(oldUser -> oldUser.getLogin().equalsIgnoreCase(newUserLogin));
-
-        if (isLoginAlreadyExist) {
-            log.error("Пользователь с таким login уже существует");
-            return respondError(user, HttpStatus.BAD_REQUEST);
-        }
-
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user = user.toBuilder().name(user.getLogin()).build();
-        }
-
-        user.setId(nextId());
-        usersByIdMap.put(user.getId(), user);
-
+        User addedUser = userService.add(user);
         log.info("Пользователь успешно добавлен");
 
-        return respondSuccess(user);
+        return respondSuccess(addedUser);
     }
 
     @PutMapping()
     public ResponseEntity<User> update(@Valid @RequestBody User user) {
         log.info("Обновление пользователя");
 
-        if (!usersByIdMap.containsKey(user.getId())) {
-            log.error("Id пользователя не найден");
-            return respondError(user, HttpStatus.NOT_FOUND);
-        }
-
-        final String newUserLogin = user.getLogin();
-        boolean isLoginAlreadyExist = usersByIdMap.values().stream()
-                .anyMatch(oldUser -> oldUser.getLogin().equalsIgnoreCase(newUserLogin));
-
-        if (isLoginAlreadyExist) {
-            log.error("Пользователь с таким login уже существует");
-            return respondError(user, HttpStatus.BAD_REQUEST);
-        }
-
-        usersByIdMap.put(user.getId(), user);
-
+        User updatedUser = userService.update(user);
         log.info("Пользователь успешно обновлен");
 
-        return respondSuccess(user);
+        return respondSuccess(updatedUser);
     }
 
     @GetMapping()
     public ResponseEntity<Collection<User>> getAll() {
-        log.info("Текущее количество пользователей: " + usersByIdMap.size());
+        log.info("Получить всех пользователей");
+        log.info("Текущее количество пользователей: " + userService.getCount());
 
-        return respondListSuccess(usersByIdMap.values());
+        return respondSuccessList(userService.getAll());
     }
 
-    private int nextId() {
-        return ++id;
+    @PutMapping("/{id}/friends/{friendId}")
+    public ResponseEntity<User> addFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("Пользователь {} хочет добавить в друзья пользователя {}", id, friendId);
+
+        User updatedUser = userService.addFriend(id, friendId);
+        log.info("Друг успешно добавлен");
+
+        return respondSuccess(updatedUser);
     }
 
-    private static ResponseEntity<User> respondSuccess(User user) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(user);
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public ResponseEntity<User> deleteFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("Пользователь {} хочет удалить из друзей пользователя {}", id, friendId);
+
+        User updatedUser = userService.deleteFriend(id, friendId);
+        log.info("Друг успешно удален");
+
+        return respondSuccess(updatedUser);
     }
 
-    private static ResponseEntity<Collection<User>> respondListSuccess(Collection<User> users) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(users);
+    @GetMapping("/{id}/friends")
+    public ResponseEntity<Collection<User>> getUserFriends(@PathVariable long id) {
+        log.info("Список друзей пользователя {}", id);
+
+        Collection<User> commonUsers = userService.getUserFriends(id);
+        log.info("Друзья пользователя успешно получены");
+
+        return respondSuccessList(commonUsers);
     }
 
-    private static ResponseEntity<User> respondError(User user, HttpStatus httpStatus) {
-        return ResponseEntity
-                .status(httpStatus)
-                .body(user);
+    @GetMapping("/{id}/friends/common/{friendId}")
+    public ResponseEntity<Collection<User>> getCommonFriends(@PathVariable long id, @PathVariable long friendId) {
+        log.info("Общие друзья пользователей {} и {}", id, friendId);
+
+        Collection<User> commonUsers = userService.getCommonFriends(id, friendId);
+        log.info("Общие друзья успешно получены");
+
+        return respondSuccessList(commonUsers);
     }
+
 }

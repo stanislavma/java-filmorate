@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -15,7 +16,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(FilmController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class FilmControllerTest {
 
     @Autowired
@@ -31,10 +33,10 @@ class FilmControllerTest {
     @Test
     void add_shouldCreateFilm() throws Exception {
         Film film = Film.builder()
-                .name("Брат 2")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
-                .releaseDate(LocalDate.parse("2000-03-25"))
-                .duration((short) 127)
+                .name("Film № 1")
+                .description("Film № 1")
+                .releaseDate(LocalDate.parse("2020-03-25"))
+                .duration((short) 112)
                 .build();
 
         mockMvc.perform(post("/films")
@@ -56,10 +58,10 @@ class FilmControllerTest {
         add_shouldCreateFilm();
 
         Film film = Film.builder()
-                .id(2)
-                .name("Брат 2")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
-                .releaseDate(LocalDate.parse("2000-03-26"))
+                .id(2L)
+                .name("Film № 1")
+                .description("Film № 1 description")
+                .releaseDate(LocalDate.parse("2020-03-26"))
                 .duration((short) 3333)
                 .build();
 
@@ -75,8 +77,8 @@ class FilmControllerTest {
     void add_shouldBadRequest_nameIsNull() throws Exception {
         Film film = Film.builder()
                 .name("")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
-                .releaseDate(LocalDate.parse("2000-03-25"))
+                .description("Film № 1")
+                .releaseDate(LocalDate.parse("2020-03-25"))
                 .duration((short) 127)
                 .build();
 
@@ -89,9 +91,9 @@ class FilmControllerTest {
     @Test
     void add_shouldBadRequest_maxDescriptionLengthMore200() throws Exception {
         Film film = Film.builder()
-                .name("Брат 2")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
-                .releaseDate(LocalDate.parse("2000-03-25"))
+                .name("Film № 1")
+                .description("Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description Film № 1 description")
+                .releaseDate(LocalDate.parse("2020-03-25"))
                 .duration((short) 127)
                 .build();
 
@@ -104,10 +106,10 @@ class FilmControllerTest {
     @Test
     void add_shouldBadRequest_releaseDateLater1895Year() throws Exception {
         Film film = Film.builder()
-                .name("Брат 2")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком. Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком")
+                .name("Film № 1")
+                .description("Film № 1 description")
                 .releaseDate(LocalDate.parse("1800-03-25"))
-                .duration((short) 127)
+                .duration((short) 115)
                 .build();
 
         mockMvc.perform(post("/films")
@@ -119,9 +121,9 @@ class FilmControllerTest {
     @Test
     void add_shouldBadRequest_durationIsNegative() throws Exception {
         Film film = Film.builder()
-                .name("Брат 2")
-                .description("Американцы знакомятся с Данилой Багровым и узнают, в чем сила. Сиквел о герое времени с мощным рок-саундтреком.")
-                .releaseDate(LocalDate.parse("2000-03-25"))
+                .name("Film № 1")
+                .description("Film № 1 description")
+                .releaseDate(LocalDate.parse("2020-03-25"))
                 .duration((short) -200)
                 .build();
 

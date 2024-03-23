@@ -1,86 +1,81 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+
+import static ru.yandex.practicum.filmorate.util.ResponseUtil.respondSuccess;
+import static ru.yandex.practicum.filmorate.util.ResponseUtil.respondSuccessList;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("films")
 public class FilmController {
-    private final Map<Integer, Film> filmsByIdMap = new LinkedHashMap<>();
-    private int id;
-    private static final LocalDate MIN_FILM_DATE = LocalDateTime.of(1895, 12, 28, 0, 0).toLocalDate();
+    private final FilmService filmService;
 
     @PostMapping()
     public ResponseEntity<Film> add(@Valid @RequestBody Film film) {
         log.info("Добавление фильма");
 
-        if (film.getReleaseDate().isBefore(MIN_FILM_DATE)) {
-            log.error("Дата релиза фильма позднее 28 декабря 1895");
-            return respondError(film, HttpStatus.BAD_REQUEST);
-        }
-
-        film.setId(nextId());
-        filmsByIdMap.put(film.getId(), film);
-
+        Film addedFilm = filmService.add(film);
         log.info("Фильм успешно добавлен");
 
-        return respondSuccess(film);
+        return respondSuccess(addedFilm);
     }
 
     @PutMapping()
     public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
         log.info("Обновление фильма");
 
-        if (!filmsByIdMap.containsKey(film.getId())) {
-            log.error("Id фильма не найден");
-            return respondError(film, HttpStatus.NOT_FOUND);
-        }
-
-        filmsByIdMap.put(film.getId(), film);
+        Film updatedFilm = filmService.update(film);
 
         log.info("Фильм успешно обновлен");
-
-        return respondSuccess(film);
+        return respondSuccess(updatedFilm);
     }
 
     @GetMapping()
     public ResponseEntity<Collection<Film>> getAll() {
-        log.info("Текущее количество фильмов: " + filmsByIdMap.size());
+        log.info("Получить все фильмы");
+        log.info("Текущее количество фильмов: " + filmService.getCount());
 
-        return respondListSuccess(filmsByIdMap.values());
+        return respondSuccessList(filmService.getAll());
     }
 
-    private int nextId() {
-        return ++id;
+    @PutMapping("/{id}/like/{userId}")
+    public ResponseEntity<Film> addLike(@PathVariable long id, @PathVariable long userId) {
+        log.info("Пользователь {} ставит like фильму {}", userId, id);
+
+        Film updatedFilm = filmService.addLike(id, userId);
+        log.info("Like успешно поставлен");
+
+        return respondSuccess(updatedFilm);
     }
 
-    private static ResponseEntity<Film> respondSuccess(Film film) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(film);
+    @DeleteMapping("/{id}/like/{userId}")
+    public ResponseEntity<Film> deleteLike(@PathVariable long id, @PathVariable long userId) {
+        log.info("Пользователь {} удаляет like фильму {}", userId, id);
+
+        Film updatedFilm = filmService.deleteLike(id, userId);
+        log.info("Like успешно удален");
+
+        return respondSuccess(updatedFilm);
     }
 
-    private static ResponseEntity<Collection<Film>> respondListSuccess(Collection<Film> films) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(films);
-    }
+    @GetMapping("/popular")
+    public ResponseEntity<Collection<Film>> getMostLiked(@RequestParam(defaultValue = "10", required = false) Integer count) {
+        log.info("Получить список фильмов с наибольшим количеством лайков");
 
-    private static ResponseEntity<Film> respondError(Film film, HttpStatus httpStatus) {
-        return ResponseEntity
-                .status(httpStatus)
-                .body(film);
+        Collection<Film> films = filmService.getMostLiked(count);
+        log.info("Фильмы с наибольшим количеством лайков успешно получены");
+
+        return respondSuccess(films);
     }
 
 }
