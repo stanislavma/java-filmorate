@@ -14,7 +14,7 @@ INSERT INTO user (login, name, email, birthday) VALUES ('user_login', 'user name
 #### Добавление нового фильма
 ```postgresql 
 INSERT INTO film (name, release_date, duration, description, age_rating_id)
-VALUES ('Movie тфьу', '2024-04-01', 120, 'Description here', 1);
+VALUES ('Movie name', '2024-04-01', 120, 'Description', 1);
 ```
 ---
 * Добавление жанра к фильму
@@ -35,3 +35,4 @@ UPDATE user_friendship SET is_approved = true WHERE user_id_one = 1 AND user_id_
 #### Поставить фильму like
 ```postgresql
 INSERT INTO film_user_like (film_id, user_id) VALUES (1, 3);
+```
