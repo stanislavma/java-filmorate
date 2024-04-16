@@ -13,7 +13,7 @@ INSERT INTO user (login, name, email, birthday) VALUES ('user_login', 'user name
 ---
 #### Добавление нового фильма
 ```postgresql 
-INSERT INTO film (name, release_date, duration, description, age_rating_id)
+INSERT INTO film (name, release_date, duration, description, mpa_id)
 VALUES ('Movie name', '2024-04-01', 120, 'Description', 1);
 ```
 ---

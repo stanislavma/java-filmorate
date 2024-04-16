@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -9,7 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,17 +20,39 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class FilmService {
-
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final MpaStorage mpaStorage;
+    private final GenreStorage genreStorage;
 
     private static final LocalDate MIN_FILM_DATE = LocalDateTime.of(1895, 12, 28, 0, 0).toLocalDate();
 
+    public FilmService(@Qualifier("dbFilmStorageImpl") FilmStorage filmStorage,
+                       UserService userService,
+                       MpaStorage mpaStorage,
+                       GenreStorage genreStorage
+    ) {
+        this.filmStorage = filmStorage;
+        this.userService = userService;
+        this.mpaStorage = mpaStorage;
+        this.genreStorage = genreStorage;
+    }
+
     public Film add(Film film) {
         validateReleaseDate(film.getReleaseDate());
+
+        if (film.getMpa() != null && film.getMpa().getId() != null) {
+            validateIsMpaExist(film.getMpa().getId());
+        }
+
+        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+            for (Genre genre : film.getGenres()) {
+                validateIsGenreExist(genre.getId());
+            }
+        }
+
         return filmStorage.add(film);
     }
 
@@ -44,6 +67,11 @@ public class FilmService {
 
     public Collection<Film> getAll() {
         return filmStorage.getAll();
+    }
+
+    public Film getById(long id) {
+        validateIsExist(id);
+        return filmStorage.getById(id);
     }
 
     public Film addLike(long id, long userId) {
@@ -92,6 +120,30 @@ public class FilmService {
             String errorText = "Фильм с таким Id не найден: " + id;
             throw new EntityNotFoundException(errorText);
         }
+    }
+
+    private void validateIsMpaExist(long id) {
+        if (!isMpaExist(id)) {
+            String errorText = "Возрастное ограничение с таким Id не найдено: " + id;
+            throw new ValidationException(errorText, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private boolean isMpaExist(long id) {
+        return mpaStorage.getAll().stream()
+                .anyMatch(mpa -> mpa.getId().equals(id));
+    }
+
+    private void validateIsGenreExist(long id) {
+        if (!isGenreExist(id)) {
+            String errorText = "Жанр с таким Id не найден: " + id;
+            throw new ValidationException(errorText, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private boolean isGenreExist(long id) {
+        return genreStorage.getAll().stream()
+                .anyMatch(genre -> genre.getId().equals(id));
     }
 
     private void validateReleaseDate(LocalDate releaseDate) {

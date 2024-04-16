@@ -2,23 +2,32 @@
 -- truncate table FILM_USER_LIKE;
 -- truncate table FILM_GENRE;
 --
--- delete from FILM where id > 0;
+delete from FILM_GENRE where id > 0;
+delete from FILM where id > 0;
+
+ALTER SEQUENCE FILM_ID_SEQ RESTART WITH 1;
+
 -- delete from APP_USER where id > 0;
 delete from GENRE where id > 0;
-delete from AGE_RATING where id > 0;
+delete from  MPA where id > 0;
+
 
 INSERT INTO GENRE (id, name)
-VALUES (1, 'Comedy'),
-       (2, 'Drama'),
-       (3, 'Action'),
-       (4, 'Romance'),
-       (5, 'Thriller');
+VALUES (1, 'Комедия'),
+       (2, 'Драма'),
+       (3, 'Мультфильм'),
+       (4, 'Триллер'),
+       (5, 'Документальный'),
+       (6, 'Боевик');
 
-INSERT INTO AGE_RATING (id, name)
-VALUES (1, 'PG'),
-       (2, 'PG-13');
+INSERT INTO  MPA (id, name)
+VALUES (1, 'G'),
+       (2, 'PG'),
+       (3, 'PG-13'),
+       (4, 'R'),
+       (5, 'NC-17');
 
--- INSERT INTO FILM (id, AGE_RATING_ID, NAME, RELEASE_DATE, DURATION, DESCRIPTION)
+-- INSERT INTO FILM (id,  MPA, NAME, RELEASE_DATE, DURATION, DESCRIPTION)
 -- VALUES (1, 1, 'film № 1', '2019-01-01', 170, 'description 1'),
 --        (2, 1, 'film № 2', '2020-01-01', 180, 'description 2'),
 --        (3, 1, 'film № 3', '2021-01-01', 190, 'description 3'),
