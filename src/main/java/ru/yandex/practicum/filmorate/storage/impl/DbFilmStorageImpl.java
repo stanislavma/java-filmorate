@@ -53,7 +53,6 @@ public class DbFilmStorageImpl implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-
         try {
             String sqlQuery = "update film set " +
                     " name = ?, description = ?, release_date = ?, duration = ?, mpa = ? " +
@@ -77,59 +76,39 @@ public class DbFilmStorageImpl implements FilmStorage {
 
     @Override
     public Film delete(long id) {
-        String sqlQuery = "delete from film where id = ?";
-        boolean isSuccess = jdbcTemplate.update(sqlQuery, id) > 0;
+        try {
+            String sqlQuery = "delete from film where id = ?";
+            boolean isSuccess = jdbcTemplate.update(sqlQuery, id) > 0;
 
-        if (isSuccess) {
-            return getById(id);
-        } else {
-            return null;
+            if (isSuccess) {
+                return getById(id);
+            }
+        } catch (DataAccessException e) {
+            log.error("Error in delete film", e);
         }
+
+        return null;
     }
 
     @Override
     public Collection<Film> getAll() {
-        String sql = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, mpa.name as mpa_name, " +
-                "STRING_AGG(g.id, ', ') AS genres_ids, " +
-                "STRING_AGG(g.name, ', ') AS genres_names " +
-                "FROM film f " +
-                "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
-                "LEFT JOIN genre g ON fg.genre_id = g.id " +
-                "LEFT JOIN mpa mpa ON mpa.id = f.mpa " +
-                "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa, mpa.name " +
-                "ORDER BY f.id;";
+        try {
+            String sql = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, mpa.name as mpa_name, " +
+                    "STRING_AGG(g.id, ', ') AS genres_ids, " +
+                    "STRING_AGG(g.name, ', ') AS genres_names " +
+                    "FROM film f " +
+                    "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
+                    "LEFT JOIN genre g ON fg.genre_id = g.id " +
+                    "LEFT JOIN mpa ON mpa.id = f.mpa " +
+                    "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa, mpa.name " +
+                    "ORDER BY f.id;";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Film film = Film.builder()
-                    .id(rs.getLong("id"))
-                    .name(rs.getString("name"))
-                    .description(rs.getString("description"))
-                    .releaseDate(rs.getDate("release_date").toLocalDate())
-                    .duration(rs.getShort("duration"))
-                    .mpa(new Mpa(rs.getLong("mpa"), rs.getString("mpa_name")))
-                    .build();
+            return jdbcTemplate.query(sql, this::mapRow);
+        } catch (DataAccessException e) {
+            log.error("Error in getAll", e);
+        }
 
-            String genresIdsString = rs.getString("genres_ids");
-            String genresNamesString = rs.getString("genres_names");
-
-            if (genresIdsString != null && genresNamesString != null &&
-                    !genresIdsString.isEmpty() && !genresNamesString.isEmpty()) {
-                String[] genreIds = genresIdsString.split(", ");
-                String[] genreNames = genresNamesString.split(", ");
-
-                Set<Genre> genres = new HashSet<>();
-                for (int i = 0; i < genreIds.length; i++) {
-                    if (i < genreNames.length) {
-                        long genreId = Long.parseLong(genreIds[i]);
-                        String genreName = genreNames[i];
-                        genres.add(new Genre(genreId, genreName));
-                    }
-                }
-                film.setGenres(genres);
-            }
-
-            return film;
-        });
+        return null;
     }
 
     @Override
@@ -141,14 +120,14 @@ public class DbFilmStorageImpl implements FilmStorage {
                     "                    from film f " +
                     "                             LEFT JOIN film_genre fg ON f.id = fg.film_id " +
                     "                             LEFT JOIN genre g ON fg.genre_id = g.id " +
-                    "                             LEFT JOIN mpa mpa ON mpa.id = f.mpa " +
+                    "                             LEFT JOIN mpa ON mpa.id = f.mpa " +
                     "                    where f.id = ? " +
                     "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa, mpa.name " +
                     "ORDER BY f.id;";
 
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRow, id);
         } catch (DataAccessException e) {
-            log.error("Error in getFilmId", e);
+            log.error("Error in getById", e);
         }
 
         return null;
@@ -184,11 +163,22 @@ public class DbFilmStorageImpl implements FilmStorage {
                 }
                 film.setGenres(genres);
             }
-        } catch (SQLException e) {
+
+            // Загрузка лайков
+            Set<Long> likes = getLikesForFilm(rs.getLong("id"));
+            film.setLikes(likes);
+
+        } catch (RuntimeException e) {
             log.error("Error in mapRow", e);
         }
 
         return film;
     }
+
+    private Set<Long> getLikesForFilm(Long filmId) {
+        String sql = "SELECT user_id FROM film_user_like WHERE film_id = ?";
+        return new HashSet<>(jdbcTemplate.queryForList(sql, Long.class, filmId));
+    }
+
 
 }

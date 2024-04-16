@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.FilmUserLikeStorage;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
@@ -26,18 +27,21 @@ public class FilmService {
     private final UserService userService;
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
+    private final FilmUserLikeStorage filmUserLikeStorage;
 
     private static final LocalDate MIN_FILM_DATE = LocalDateTime.of(1895, 12, 28, 0, 0).toLocalDate();
 
     public FilmService(@Qualifier("dbFilmStorageImpl") FilmStorage filmStorage,
                        UserService userService,
                        MpaStorage mpaStorage,
-                       GenreStorage genreStorage
+                       GenreStorage genreStorage,
+                       FilmUserLikeStorage filmUserLikeStorage
     ) {
         this.filmStorage = filmStorage;
         this.userService = userService;
         this.mpaStorage = mpaStorage;
         this.genreStorage = genreStorage;
+        this.filmUserLikeStorage = filmUserLikeStorage;
     }
 
     public Film add(Film film) {
@@ -80,10 +84,7 @@ public class FilmService {
 
         Film film = filmStorage.getById(id);
 
-        Set<Long> likes = film.getLikes();
-        likes.add(userId);
-
-        filmStorage.update(film);
+        Long filmUserLikeId = filmUserLikeStorage.addLike(id, userId);
         return film;
     }
 

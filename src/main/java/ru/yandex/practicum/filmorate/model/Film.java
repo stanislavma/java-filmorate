@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -15,7 +14,6 @@ import java.util.*;
 @Data
 @Jacksonized
 @Builder
-
 public class Film {
     private Long id;
 
