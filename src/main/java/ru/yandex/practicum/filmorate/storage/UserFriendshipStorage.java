@@ -7,6 +7,9 @@ import java.util.Collection;
 public interface UserFriendshipStorage {
 
     Long addUserToFriend(Long userIdOne, Long userIdTwo);
+
     Long deleteFriend(Long userIdOne, Long userIdTwo);
+
     Collection<User> getFriends(Long userId);
+
 }
