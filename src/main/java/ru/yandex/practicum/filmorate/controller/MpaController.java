@@ -22,7 +22,7 @@ public class MpaController {
     @GetMapping()
     public ResponseEntity<Collection<Mpa>> getAll() {
         log.info("Получить все возрастные рейтинги");
-        log.info("Текущее количество возрастных рейтингов: " + mpaService.getCount());
+        log.info("Текущее количество возрастных рейтингов: {}", mpaService.getCount());
 
         return respondSuccessList(mpaService.getAll());
     }

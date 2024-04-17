@@ -25,7 +25,7 @@ public class GenreController {
     @GetMapping()
     public ResponseEntity<Collection<Genre>> getAll() {
         log.info("Получить все жанры");
-        log.info("Текущее количество жанров: " + genreService.getCount());
+        log.info("Текущее количество жанров: {}", genreService.getCount());
 
         return respondSuccessList(genreService.getAll());
     }

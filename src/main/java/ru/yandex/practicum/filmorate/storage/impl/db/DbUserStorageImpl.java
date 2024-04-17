@@ -27,21 +27,6 @@ public class DbUserStorageImpl implements UserStorage {
                     .usingGeneratedKeyColumns("id");
             long userId = simpleJdbcInsert.executeAndReturnKey(user.toMap()).longValue();
             user.setId(userId);
-
-//            // Добавление жанров фильма в таблицу user_genre
-//            if (user.getFriends() != null && !user.getFriends().isEmpty()) {
-//                simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-//                        .withTableName("user_genre")
-//                        .usingColumns("user_id", "genre_id");
-//
-//                for (Genre genre : user.getGenres()) {
-//                    Map<String, Object> parameters = new HashMap<>();
-//                    parameters.put("user_id", userId);
-//                    parameters.put("genre_id", genre.getId());
-//                    simpleJdbcInsert.execute(parameters);
-//                }
-//            }
-
         } catch (Exception e) {
             log.error("Error in add user", e);
         }

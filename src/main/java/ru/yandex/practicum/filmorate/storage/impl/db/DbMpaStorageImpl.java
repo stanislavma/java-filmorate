@@ -27,7 +27,7 @@ public class DbMpaStorageImpl implements MpaStorage {
         try {
             mpas = jdbcTemplate.query(sql, this::mapRow);
         } catch (DataAccessException e) {
-            log.error("Error retrieving all mpas", e);
+            log.error("Error retrieving all mpa", e);
         }
 
         return mpas;
