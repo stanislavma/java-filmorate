@@ -83,7 +83,7 @@ public class FilmService {
 
         Film film = filmStorage.getById(id);
 
-         filmUserLikeStorage.addLike(id, userId);
+        filmUserLikeStorage.addLike(id, userId);
         return film;
     }
 

@@ -46,7 +46,7 @@ public class Film {
         if (mpa != null && mpa.getId() != null) {
             values.put("mpa", mpa.getId());
         }
-              
+
         values.put("genres", genres);
         values.put("likes", likes);
         return values;
