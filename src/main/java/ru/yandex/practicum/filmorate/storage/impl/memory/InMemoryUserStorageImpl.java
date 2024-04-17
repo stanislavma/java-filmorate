@@ -27,7 +27,7 @@ public class InMemoryUserStorageImpl implements UserStorage {
     }
 
     @Override
-    public User delete(long id) {
+    public Long delete(long id) {
         return null;
     }
 

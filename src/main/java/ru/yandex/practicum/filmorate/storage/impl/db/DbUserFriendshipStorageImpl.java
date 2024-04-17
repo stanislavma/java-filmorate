@@ -51,14 +51,11 @@ public class DbUserFriendshipStorageImpl implements UserFriendshipStorage {
             String sqlQuery = "delete from user_friendship where user_id_one = ? and user_id_two = ?";
             boolean isSuccess = jdbcTemplate.update(sqlQuery, userIdOne, userIdTwo) > 0;
 
-            if (isSuccess) {
-                return userIdTwo;
-            }
         } catch (DataAccessException e) {
             log.error("Error in deleteFriend", e);
         }
 
-        return null;
+        return userIdTwo;
     }
 
     @Override

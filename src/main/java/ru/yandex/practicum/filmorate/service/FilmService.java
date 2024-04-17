@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,7 +83,7 @@ public class FilmService {
 
         Film film = filmStorage.getById(id);
 
-        Long filmUserLikeId = filmUserLikeStorage.addLike(id, userId);
+         filmUserLikeStorage.addLike(id, userId);
         return film;
     }
 
@@ -92,13 +91,8 @@ public class FilmService {
         validateIsExist(id);
         userService.validateIsExist(userId);
 
-        Film film = filmStorage.getById(id);
-
-        Set<Long> likes = film.getLikes();
-        likes.remove(userId);
-
-        filmStorage.update(film);
-        return film;
+        filmUserLikeStorage.deleteLike(id, userId);
+        return filmStorage.getById(id);
     }
 
     public Collection<Film> getMostLiked(int count) {

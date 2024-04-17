@@ -10,5 +10,4 @@ import lombok.*;
 public class Genre {
     private final Long id;
     private String name;
-
 }

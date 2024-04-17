@@ -27,7 +27,7 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film delete(long id) {
+    public Long delete(long id) {
         return null;
     }
 

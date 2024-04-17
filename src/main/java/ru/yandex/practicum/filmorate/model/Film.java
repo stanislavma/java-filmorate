@@ -13,7 +13,7 @@ import java.util.*;
  */
 @Data
 @Jacksonized
-@Builder
+@Builder(toBuilder = true)
 public class Film {
     private Long id;
 

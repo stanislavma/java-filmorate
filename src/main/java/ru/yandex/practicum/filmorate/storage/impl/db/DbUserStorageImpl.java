@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -55,23 +55,20 @@ public class DbUserStorageImpl implements UserStorage {
     }
 
     @Override
-    public User delete(long id) {
+    public Long delete(long id) {
         try {
             String sqlQuery = "delete from app_user where id = ?";
             boolean isSuccess = jdbcTemplate.update(sqlQuery, id) > 0;
 
-            if (isSuccess) {
-                return getById(id);
-            }
         } catch (DataAccessException e) {
             log.error("Error in delete user", e);
         }
 
-        return null;
+        return id;
     }
 
     @Override
-    public Collection<User> getAll() {
+    public List<User> getAll() {
         try {
             String sql = "select id, login, name, email, birthday " +
                     "FROM app_user u;";

@@ -75,23 +75,20 @@ public class DbFilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film delete(long id) {
+    public Long delete(long id) {
         try {
             String sqlQuery = "delete from film where id = ?";
             boolean isSuccess = jdbcTemplate.update(sqlQuery, id) > 0;
 
-            if (isSuccess) {
-                return getById(id);
-            }
         } catch (DataAccessException e) {
             log.error("Error in delete film", e);
         }
 
-        return null;
+        return id;
     }
 
     @Override
-    public Collection<Film> getAll() {
+    public List<Film> getAll() {
         try {
             String sql = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, mpa.name as mpa_name, " +
                     "STRING_AGG(g.id, ', ') AS genres_ids, " +
@@ -141,8 +138,16 @@ public class DbFilmStorageImpl implements FilmStorage {
                     .description(rs.getString("description"))
                     .releaseDate(rs.getDate("release_date").toLocalDate())
                     .duration(rs.getShort("duration"))
-                    .mpa(new Mpa(rs.getLong("mpa"), rs.getString("mpa_name")))
                     .build();
+
+            Long mpaId = rs.getObject("mpa", Long.class);
+            if (mpaId != null && mpaId != 0) {
+                String mpaName = rs.getString("mpa_name");
+                Mpa mpa = new Mpa(mpaId, mpaName);
+                film.setMpa(mpa);
+            } else {
+                film.setMpa(null);  // Устанавливаем mpa как null, если не найден в базе данных
+            }
 
             String genresIdsString = rs.getString("genres_ids");
             String genresNamesString = rs.getString("genres_names");
@@ -176,7 +181,7 @@ public class DbFilmStorageImpl implements FilmStorage {
 
     private Set<Long> getLikesForFilm(Long filmId) {
         String sql = "SELECT user_id FROM film_user_like WHERE film_id = ?";
-        return new HashSet<>(jdbcTemplate.queryForList(sql, Long.class, filmId));
+        return new LinkedHashSet<>(jdbcTemplate.queryForList(sql, Long.class, filmId));
     }
 
 
