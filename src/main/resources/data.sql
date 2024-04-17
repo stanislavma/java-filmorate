@@ -3,9 +3,14 @@
 -- truncate table FILM_GENRE;
 --
 delete from FILM_GENRE where id > 0;
+delete from FILM_USER_LIKE where id > 0;
+delete from USER_FRIENDSHIP where id > 0;
+
 delete from FILM where id > 0;
+delete from APP_USER where id > 0;
 
 ALTER SEQUENCE FILM_ID_SEQ RESTART WITH 1;
+ALTER SEQUENCE USER_ID_SEQ RESTART WITH 1;
 
 -- delete from APP_USER where id > 0;
 delete from GENRE where id > 0;
@@ -43,7 +48,7 @@ VALUES (1, 'G'),
 --        (5, 5),
 --        (6, 5);
 --
--- insert into APP_USER (id, LOGIN, NAME, EMAIL, BIRTHDATE)
+-- insert into APP_USER (id, LOGIN, NAME, EMAIL, BIRTHDAY)
 -- VALUES (1, 'user_1', 'user_1', 'user_1@gmail.com', '2000-03-03'),
 --        (2, 'user_2', 'user_2', 'user_2@gmail.com', '2001-03-03'),
 --        (3, 'user_3', 'user_3', 'user_3@gmail.com', '2002-03-03'),

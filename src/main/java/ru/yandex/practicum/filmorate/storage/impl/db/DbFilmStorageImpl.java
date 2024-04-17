@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.impl;
+package ru.yandex.practicum.filmorate.storage.impl.db;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -122,8 +122,7 @@ public class DbFilmStorageImpl implements FilmStorage {
                     "                             LEFT JOIN genre g ON fg.genre_id = g.id " +
                     "                             LEFT JOIN mpa ON mpa.id = f.mpa " +
                     "                    where f.id = ? " +
-                    "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa, mpa.name " +
-                    "ORDER BY f.id;";
+                    "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa, mpa.name ";
 
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRow, id);
         } catch (DataAccessException e) {

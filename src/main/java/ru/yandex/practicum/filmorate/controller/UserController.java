@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -46,6 +47,13 @@ public class UserController {
         log.info("Текущее количество пользователей: " + userService.getCount());
 
         return respondSuccessList(userService.getAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getById(@PathVariable long id) {
+        log.info("Получить пользователя по {}", id);
+
+        return respondSuccess(userService.getById(id));
     }
 
     @PutMapping("/{id}/friends/{friendId}")
