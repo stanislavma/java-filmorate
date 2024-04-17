@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -27,24 +28,24 @@ public class DbMpaStorageImpl implements MpaStorage {
         try {
             mpas = jdbcTemplate.query(sql, this::mapRow);
         } catch (DataAccessException e) {
-            log.error("Error retrieving all mpa", e);
+            log.error("Error in getAll", e);
         }
 
         return mpas;
     }
 
     @Override
-    public Mpa getById(long id) {
+    public Optional<Mpa> getById(long id) {
         try {
             String sqlQuery = "select id, name " +
                     "from mpa where id = ?";
 
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRow, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::mapRow, id));
         } catch (DataAccessException e) {
             log.error("Error in getById", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     private Mpa mapRow(ResultSet resultSet, int rowNum) throws SQLException {

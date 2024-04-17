@@ -6,8 +6,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.FilmUserLike;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserFriendship;
 import ru.yandex.practicum.filmorate.storage.UserFriendshipStorage;
 
 import java.sql.ResultSet;
@@ -25,18 +25,15 @@ public class DbUserFriendshipStorageImpl implements UserFriendshipStorage {
     @Override
     public Long addUserToFriend(Long userIdOne, Long userIdTwo) {
         Long userFriendshipId = null;
-        try {
 
+        try {
             SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                     .withTableName("user_friendship")
                     .usingGeneratedKeyColumns("id")
                     .usingColumns("user_id_one", "user_id_two");
-            userFriendshipId = simpleJdbcInsert.executeAndReturnKey(new FilmUserLike(userIdOne, userIdTwo).toMap()).longValue();
 
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("user_id_one", userIdOne);
-            parameters.put("user_id_two", userIdTwo);
-            simpleJdbcInsert.execute(parameters);
+            userFriendshipId = simpleJdbcInsert.executeAndReturnKey(
+                    toUserFriendshipMap(new UserFriendship(userIdOne, userIdTwo))).longValue();
 
         } catch (Exception e) {
             log.error("Error in addUserToFriend", e);
@@ -81,6 +78,14 @@ public class DbUserFriendshipStorageImpl implements UserFriendshipStorage {
         }
 
         return user;
+    }
+
+    public Map<String, Object> toUserFriendshipMap(UserFriendship userFriendship) {
+        Map<String, Object> values = new HashMap<>();
+        values.put("user_id_one", userFriendship.getUserIdOne());
+        values.put("user_id_two", userFriendship.getUserIdTwo());
+
+        return values;
     }
 
 }

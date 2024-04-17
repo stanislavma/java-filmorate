@@ -16,7 +16,7 @@ import static ru.yandex.practicum.filmorate.util.ResponseUtil.respondSuccessList
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("users")
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 

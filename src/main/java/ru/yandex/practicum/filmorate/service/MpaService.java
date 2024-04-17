@@ -25,15 +25,14 @@ public class MpaService {
 
     public Mpa getById(long id) {
         validateIsExist(id);
-        return mpaStorage.getById(id);
+        return mpaStorage.getById(id).orElse(null);
     }
 
     /**
      * Проверяет наличие возрастного рейтинга с заданным id
      */
     private boolean isExist(long id) {
-        return mpaStorage.getAll().stream()
-                .anyMatch(user -> user.getId().equals(id));
+        return mpaStorage.getById(id).isPresent();
     }
 
     protected void validateIsExist(long id) {

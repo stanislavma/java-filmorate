@@ -11,7 +11,10 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class DbUserStorageImpl implements UserStorage {
             SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                     .withTableName("app_user")
                     .usingGeneratedKeyColumns("id");
-            long userId = simpleJdbcInsert.executeAndReturnKey(user.toMap()).longValue();
+            long userId = simpleJdbcInsert.executeAndReturnKey(toUserMap(user)).longValue();
             user.setId(userId);
         } catch (Exception e) {
             log.error("Error in add user", e);
@@ -82,18 +85,18 @@ public class DbUserStorageImpl implements UserStorage {
     }
 
     @Override
-    public User getById(long id) {
+    public Optional<User> getById(long id) {
         try {
             String sql = "select id, login, name, email, birthday " +
                     "FROM app_user u " +
                     "WHERE id = ?";
 
-            return jdbcTemplate.queryForObject(sql, this::mapRow, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::mapRow, id));
         } catch (DataAccessException e) {
             log.error("Error in getById", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     private User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -112,6 +115,17 @@ public class DbUserStorageImpl implements UserStorage {
         }
 
         return user;
+    }
+
+    public Map<String, Object> toUserMap(User user) {
+        Map<String, Object> values = new HashMap<>();
+        values.put("login", user.getLogin());
+        values.put("name", user.getName());
+        values.put("email", user.getEmail());
+        values.put("birthday", user.getBirthday());
+        values.put("friends", user.getFriends());
+
+        return values;
     }
 
 }

@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.UserFriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ public class UserService {
 
     public User getById(long id) {
         validateIsExist(id);
-        return userStorage.getById(id);
+        return userStorage.getById(id).orElse(null);
     }
 
     public User addFriend(long id, long friendId) {
@@ -63,11 +64,9 @@ public class UserService {
         validateIsExist(friendId);
         validateSameUser(id, friendId);
 
-//        User user = addUserToFriend(id, friendId);
-
         userFriendshipStorage.addUserToFriend(id, friendId); // Добавить друга
 
-        return userStorage.getById(id);
+        return userStorage.getById(id).orElse(null);
     }
 
     public User deleteFriend(long id, long friendId) {
@@ -76,7 +75,7 @@ public class UserService {
 
         userFriendshipStorage.deleteFriend(id, friendId); // Удалить друга
 
-        return userStorage.getById(id);
+        return userStorage.getById(id).orElse(null);
     }
 
     public Collection<User> getUserFriends(long id) {
@@ -104,6 +103,8 @@ public class UserService {
         return firstUserFriends.stream()
                 .filter(secondUserFriends::contains)
                 .map(userStorage::getById)
+                .filter(Optional::isPresent) // Убедитесь, что Optional не пуст
+                .map(Optional::get) // Извлеките значение
                 .collect(Collectors.toSet());
     }
 
@@ -111,8 +112,7 @@ public class UserService {
      * Проверяет наличие пользователя с заданным id
      */
     private boolean isExist(long id) {
-        return userStorage.getAll().stream()
-                .anyMatch(user -> user.getId().equals(id));
+        return userStorage.getById(id).isPresent();
     }
 
     /**

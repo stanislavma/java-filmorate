@@ -25,7 +25,7 @@ class DbUserStorageImplTest {
 
         User newUser = addDemoUser(dbUserStorageImpl);
 
-        User savedUser = dbUserStorageImpl.getById(newUser.getId());
+        User savedUser = dbUserStorageImpl.getById(newUser.getId()).orElse(null);
 
         assertThat(savedUser)
                 .isNotNull() // проверяем, что объект не равен null
@@ -42,7 +42,8 @@ class DbUserStorageImplTest {
         User updatingUser = newUser.toBuilder().login("vanya123_updated").build();
         dbUserStorageImpl.update(updatingUser);
 
-        User updatedUser = dbUserStorageImpl.getById(newUser.getId());
+        User updatedUser = dbUserStorageImpl.getById(newUser.getId()).orElse(null);
+        assert updatedUser != null;
 
         Assert.isTrue(updatedUser.getLogin().equals("vanya123_updated"), "Не ожидаемое значение login");
 
@@ -58,15 +59,16 @@ class DbUserStorageImplTest {
 
         User newUser = addDemoUser(dbUserStorageImpl);
 
-        User savedUser = dbUserStorageImpl.getById(newUser.getId());
+        User savedUser = dbUserStorageImpl.getById(newUser.getId()).orElse(null);
         assertThat(savedUser)
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(newUser);
 
+        assert savedUser != null;
         Long deletedUserId = dbUserStorageImpl.delete(savedUser.getId());
 
-        User deletedUser = dbUserStorageImpl.getById(deletedUserId);
+        User deletedUser = dbUserStorageImpl.getById(deletedUserId).orElse(null);
 
         assertThat(deletedUser)
                 .isNull();
@@ -89,7 +91,7 @@ class DbUserStorageImplTest {
 
         User addedUser = addDemoUser(dbUserStorageImpl);
 
-        User receivedUser = dbUserStorageImpl.getById(addedUser.getId());
+        User receivedUser = dbUserStorageImpl.getById(addedUser.getId()).orElse(null);
 
         assertThat(addedUser)
                 .isNotNull()

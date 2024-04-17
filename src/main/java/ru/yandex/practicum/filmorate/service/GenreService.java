@@ -25,15 +25,14 @@ public class GenreService {
 
     public Genre getById(long id) {
         validateIsExist(id);
-        return genreStorage.getById(id);
+        return genreStorage.getById(id).orElse(null);
     }
 
     /**
      * Проверяет наличие жанра с заданным id
      */
     private boolean isExist(long id) {
-        return genreStorage.getAll().stream()
-                .anyMatch(user -> user.getId().equals(id));
+        return genreStorage.getById(id).isPresent();
     }
 
     protected void validateIsExist(long id) {

@@ -16,7 +16,7 @@ import static ru.yandex.practicum.filmorate.util.ResponseUtil.respondSuccessList
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("films")
+@RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
 
@@ -53,6 +53,16 @@ public class FilmController {
         log.info("Получить фильм по {}", id);
 
         return respondSuccess(filmService.getById(id));
+    }
+
+    @GetMapping("/{id}/like")
+    public ResponseEntity<Collection<Long>> getLikes(@PathVariable long id) {
+        log.info("Лайки фильма {}", id);
+
+        Collection<Long> filmLikes = filmService.getLikes(id);
+        log.info("Фильм лайкнули {} раз", filmLikes.size());
+
+        return respondSuccess(filmLikes);
     }
 
     @PutMapping("/{id}/like/{userId}")

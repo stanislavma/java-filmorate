@@ -6,9 +6,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,17 +34,5 @@ public class User {
 
     @Builder.Default
     private Set<Long> friends = new LinkedHashSet<>();
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> values = new HashMap<>();
-        values.put("login", login);
-        values.put("name", name);
-        values.put("email", email);
-        values.put("birthday", birthday);
-
-        values.put("friends", friends);
-
-        return values;
-    }
 
 }

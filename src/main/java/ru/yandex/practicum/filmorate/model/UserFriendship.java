@@ -7,15 +7,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
 /**
- * Film user like
+ * User friendship
  */
 @Data
 @Jacksonized
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class FilmUserLike {
+public class UserFriendship {
     private Long id;
-    private final Long filmId;
-    private final Long userId;
+    private final Long userIdOne;
+    private final Long userIdTwo;
 }

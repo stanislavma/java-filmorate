@@ -24,7 +24,7 @@ class DbFilmStorageImplTest {
 
         Film newFilm = addDemoFilm(dbFilmStorageImpl);
 
-        Film savedFilm = dbFilmStorageImpl.getById(newFilm.getId());
+        Film savedFilm = dbFilmStorageImpl.getById(newFilm.getId()).orElse(null);
 
         assertThat(savedFilm)
                 .isNotNull() // проверяем, что объект не равен null
@@ -41,7 +41,8 @@ class DbFilmStorageImplTest {
         Film updatingFilm = newFilm.toBuilder().name("Film № 1 updated").build();
         dbFilmStorageImpl.update(updatingFilm);
 
-        Film updatedFilm = dbFilmStorageImpl.getById(newFilm.getId());
+        Film updatedFilm = dbFilmStorageImpl.getById(newFilm.getId()).orElse(null);
+        assert updatedFilm != null;
 
         Assert.isTrue(updatedFilm.getName().equals("Film № 1 updated"), "Не ожидаемое значение name");
 
@@ -57,7 +58,9 @@ class DbFilmStorageImplTest {
 
         Film newFilm = addDemoFilm(dbFilmStorageImpl);
 
-        Film savedFilm = dbFilmStorageImpl.getById(newFilm.getId());
+        Film savedFilm = dbFilmStorageImpl.getById(newFilm.getId()).orElse(null);
+        assert savedFilm != null;
+
         assertThat(savedFilm)
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -65,7 +68,7 @@ class DbFilmStorageImplTest {
 
         Long deletedFilmId = dbFilmStorageImpl.delete(savedFilm.getId());
 
-        Film deletedFilm = dbFilmStorageImpl.getById(deletedFilmId);
+        Film deletedFilm = dbFilmStorageImpl.getById(deletedFilmId).orElse(null);
 
         assertThat(deletedFilm)
                 .isNull();
@@ -88,7 +91,7 @@ class DbFilmStorageImplTest {
 
         Film addedFilm = addDemoFilm(dbFilmStorageImpl);
 
-        Film receivedFilm = dbFilmStorageImpl.getById(addedFilm.getId());
+        Film receivedFilm = dbFilmStorageImpl.getById(addedFilm.getId()).orElse(null);
 
         assertThat(addedFilm)
                 .isNotNull()

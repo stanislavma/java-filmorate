@@ -36,20 +36,4 @@ public class Film {
     @Builder.Default
     private Set<Long> likes = new LinkedHashSet<>();
 
-    public Map<String, Object> toMap() {
-        Map<String, Object> values = new HashMap<>();
-        values.put("name", name);
-        values.put("description", description);
-        values.put("release_date", releaseDate);
-        values.put("duration", duration);
-
-        if (mpa != null && mpa.getId() != null) {
-            values.put("mpa", mpa.getId());
-        }
-
-        values.put("genres", genres);
-        values.put("likes", likes);
-        return values;
-    }
-
 }

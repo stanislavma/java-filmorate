@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,17 +75,21 @@ public class FilmService {
 
     public Film getById(long id) {
         validateIsExist(id);
-        return filmStorage.getById(id);
+        return filmStorage.getById(id).orElse(null);
+    }
+
+    public Collection<Long> getLikes(long id) {
+        return filmUserLikeStorage.getLikes(id);
     }
 
     public Film addLike(long id, long userId) {
         validateIsExist(id);
         userService.validateIsExist(userId);
 
-        Film film = filmStorage.getById(id);
+        Optional<Film> filmOptional = filmStorage.getById(id);
 
         filmUserLikeStorage.addLike(id, userId);
-        return film;
+        return filmOptional.orElse(null);
     }
 
     public Film deleteLike(long id, long userId) {
@@ -92,7 +97,7 @@ public class FilmService {
         userService.validateIsExist(userId);
 
         filmUserLikeStorage.deleteLike(id, userId);
-        return filmStorage.getById(id);
+        return filmStorage.getById(id).orElse(null);
     }
 
     public Collection<Film> getMostLiked(int count) {
@@ -102,19 +107,18 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Проверяет наличие фильма с заданным id
-     */
-    private boolean isExist(long id) {
-        return filmStorage.getAll().stream()
-                .anyMatch(film -> film.getId().equals(id));
-    }
-
     private void validateIsExist(long id) {
         if (!isExist(id)) {
             String errorText = "Фильм с таким Id не найден: " + id;
             throw new EntityNotFoundException(errorText);
         }
+    }
+
+    /**
+     * Проверяет наличие фильма с заданным id
+     */
+    private boolean isExist(long id) {
+        return filmStorage.getById(id).isPresent();
     }
 
     private void validateIsMpaExist(long id) {
@@ -125,8 +129,7 @@ public class FilmService {
     }
 
     private boolean isMpaExist(long id) {
-        return mpaStorage.getAll().stream()
-                .anyMatch(mpa -> mpa.getId().equals(id));
+        return mpaStorage.getById(id).isPresent();
     }
 
     private void validateIsGenreExist(long id) {
@@ -137,8 +140,7 @@ public class FilmService {
     }
 
     private boolean isGenreExist(long id) {
-        return genreStorage.getAll().stream()
-                .anyMatch(genre -> genre.getId().equals(id));
+        return genreStorage.getById(id).isPresent();
     }
 
     private void validateReleaseDate(LocalDate releaseDate) {

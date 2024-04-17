@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.FilmUserLike;
 import ru.yandex.practicum.filmorate.storage.FilmUserLikeStorage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 @Component
@@ -16,6 +18,23 @@ import java.util.*;
 @Slf4j
 public class DbFilmUserLikeStorageImpl implements FilmUserLikeStorage {
     private final JdbcTemplate jdbcTemplate;
+
+    @Override
+    public Collection<Long> getLikes(Long filmId) {
+        String sql = "SELECT user_id FROM film_user_like WHERE film_id = ?";
+
+        List<Long> userIds = new ArrayList<>();
+
+        try {
+            userIds = jdbcTemplate.query(sql,
+                    (rs, rowNum) -> rs.getLong("user_id"),
+                    filmId);
+        } catch (DataAccessException e) {
+            log.error("Error in getLikes", e);
+        }
+
+        return userIds;
+    }
 
     @Override
     public Long addLike(Long filmId, Long userId) {
@@ -26,12 +45,9 @@ public class DbFilmUserLikeStorageImpl implements FilmUserLikeStorage {
                     .withTableName("film_user_like")
                     .usingGeneratedKeyColumns("id")
                     .usingColumns("film_id", "user_id");
-            filmUserLikeId = simpleJdbcInsert.executeAndReturnKey(new FilmUserLike(filmId, userId).toMap()).longValue();
 
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("film_id", filmId);
-            parameters.put("user_id", userId);
-            simpleJdbcInsert.execute(parameters);
+            filmUserLikeId = simpleJdbcInsert.executeAndReturnKey(
+                    toFilmUserLikeMap(new FilmUserLike(filmId, userId))).longValue();
 
         } catch (Exception e) {
             log.error("Error in add addLike", e);
@@ -51,6 +67,20 @@ public class DbFilmUserLikeStorageImpl implements FilmUserLikeStorage {
         }
 
         return filmId;
+    }
+
+    public Map<String, Object> toFilmUserLikeMap(FilmUserLike filmUserLike) {
+        Map<String, Object> values = new HashMap<>();
+        values.put("film_id", filmUserLike.getFilmId());
+        values.put("user_id", filmUserLike.getUserId());
+
+        return values;
+    }
+
+    private FilmUserLike mapUserLikeRow(ResultSet rs, int rowNum) throws SQLException {
+        return FilmUserLike.builder()
+                .userId(rs.getLong("user_id"))
+                .build();
     }
 
 }

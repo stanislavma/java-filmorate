@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -27,24 +28,24 @@ public class DbGenreStorageImpl implements GenreStorage {
         try {
             genres = jdbcTemplate.query(sql, this::mapRow);
         } catch (DataAccessException e) {
-            log.error("Error retrieving all Genres", e);
+            log.error("Error in getAll", e);
         }
 
         return genres;
     }
 
     @Override
-    public Genre getById(long id) {
+    public Optional<Genre> getById(long id) {
         try {
             String sqlQuery = "select id, name " +
                     "from genre where id = ?";
 
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRow, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::mapRow, id));
         } catch (DataAccessException e) {
             log.error("Error in getById", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     private Genre mapRow(ResultSet resultSet, int rowNum) throws SQLException {

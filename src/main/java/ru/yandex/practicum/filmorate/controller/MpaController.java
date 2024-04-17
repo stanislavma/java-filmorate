@@ -15,7 +15,7 @@ import static ru.yandex.practicum.filmorate.util.ResponseUtil.respondSuccessList
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("mpa")
+@RequestMapping("/mpa")
 public class MpaController {
     private final MpaService mpaService;
 
@@ -33,6 +33,5 @@ public class MpaController {
 
         return respondSuccess(mpaService.getById(id));
     }
-
 
 }

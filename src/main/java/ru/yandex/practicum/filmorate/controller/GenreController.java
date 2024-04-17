@@ -18,7 +18,7 @@ import static ru.yandex.practicum.filmorate.util.ResponseUtil.respondSuccessList
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("genres")
+@RequestMapping("/genres")
 public class GenreController {
     private final GenreService genreService;
 
