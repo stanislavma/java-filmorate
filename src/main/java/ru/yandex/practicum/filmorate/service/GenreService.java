@@ -24,23 +24,11 @@ public class GenreService {
     }
 
     public Genre getById(long id) {
-        validateIsExist(id);
-        return genreStorage.getById(id).orElse(null);
-    }
-
-    /**
-     * Проверяет наличие жанра с заданным id
-     */
-    private boolean isExist(long id) {
-        return genreStorage.getById(id).isPresent();
-    }
-
-    protected void validateIsExist(long id) {
-        if (!isExist(id)) {
+        return genreStorage.getById(id).orElseThrow(() -> {
             String errorText = "Жанр с таким Id не найден: " + id;
             log.error(errorText);
-            throw new EntityNotFoundException(errorText);
-        }
+            return new EntityNotFoundException(errorText);
+        });
     }
 
 }

@@ -55,8 +55,11 @@ public class UserService {
     }
 
     public User getById(long id) {
-        validateIsExist(id);
-        return userStorage.getById(id).orElse(null);
+        return userStorage.getById(id).orElseThrow(() -> {
+            String errorText = "Пользователь с таким Id не найден: " + id;
+            log.error(errorText);
+            return new EntityNotFoundException(errorText);
+        });
     }
 
     public User addFriend(long id, long friendId) {

@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,12 +30,7 @@ public class FilmService {
 
     private static final LocalDate MIN_FILM_DATE = LocalDateTime.of(1895, 12, 28, 0, 0).toLocalDate();
 
-    public FilmService(@Qualifier("dbFilmStorageImpl") FilmStorage filmStorage,
-                       UserService userService,
-                       MpaStorage mpaStorage,
-                       GenreStorage genreStorage,
-                       FilmUserLikeStorage filmUserLikeStorage
-    ) {
+    public FilmService(@Qualifier("dbFilmStorageImpl") FilmStorage filmStorage, UserService userService, MpaStorage mpaStorage, GenreStorage genreStorage, FilmUserLikeStorage filmUserLikeStorage) {
         this.filmStorage = filmStorage;
         this.userService = userService;
         this.mpaStorage = mpaStorage;
@@ -74,8 +68,11 @@ public class FilmService {
     }
 
     public Film getById(long id) {
-        validateIsExist(id);
-        return filmStorage.getById(id).orElse(null);
+        return filmStorage.getById(id).orElseThrow(() -> {
+            String errorText = "Фильм с таким Id не найден: " + id;
+            log.error(errorText);
+            return new EntityNotFoundException(errorText);
+        });
     }
 
     public Collection<Long> getLikes(long id) {
@@ -83,13 +80,11 @@ public class FilmService {
     }
 
     public Film addLike(long id, long userId) {
-        validateIsExist(id);
-        userService.validateIsExist(userId);
+        Film film = getById(id); // если фильма нету то метод сам пробросит ошибку
+        userService.getById(userId); // если пользователя нету то метод сам пробросит ошибку
 
-        Optional<Film> filmOptional = filmStorage.getById(id);
-
-        filmUserLikeStorage.addLike(id, userId);
-        return filmOptional.orElse(null);
+        filmUserLikeStorage.addLike(id, userId); //добавляем лайк от существующего пользователя существующему фильму
+        return film; //вот этот вопрос надо ли возвращать фильм при добавлении лайков, если в нем не содержится лайков, но это уже не важно
     }
 
     public Film deleteLike(long id, long userId) {
@@ -101,10 +96,7 @@ public class FilmService {
     }
 
     public Collection<Film> getMostLiked(int count) {
-        return filmStorage.getAll().stream()
-                .sorted(Comparator.comparingInt((Film o) -> o.getLikes().size()).reversed())
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.getAll().stream().sorted(Comparator.comparingInt((Film o) -> o.getLikes().size()).reversed()).limit(count).collect(Collectors.toList());
     }
 
     private void validateIsExist(long id) {

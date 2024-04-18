@@ -24,23 +24,11 @@ public class MpaService {
     }
 
     public Mpa getById(long id) {
-        validateIsExist(id);
-        return mpaStorage.getById(id).orElse(null);
-    }
-
-    /**
-     * Проверяет наличие возрастного рейтинга с заданным id
-     */
-    private boolean isExist(long id) {
-        return mpaStorage.getById(id).isPresent();
-    }
-
-    protected void validateIsExist(long id) {
-        if (!isExist(id)) {
+        return mpaStorage.getById(id).orElseThrow(() -> {
             String errorText = "Возрастной рейтинг с таким Id не найден: " + id;
             log.error(errorText);
-            throw new EntityNotFoundException(errorText);
-        }
+            return new EntityNotFoundException(errorText);
+        });
     }
 
 }
