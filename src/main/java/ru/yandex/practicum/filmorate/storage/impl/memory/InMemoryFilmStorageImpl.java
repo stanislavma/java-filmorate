@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.impl;
+package ru.yandex.practicum.filmorate.storage.impl.memory;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class InMemoryFilmStorageImpl implements FilmStorage {
@@ -27,7 +28,7 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film delete(long id) {
+    public Long delete(long id) {
         return null;
     }
 
@@ -37,8 +38,8 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film getById(long id) {
-        return filmsByIdMap.get(id);
+    public Optional<Film> getById(long id) {
+        return Optional.ofNullable(filmsByIdMap.get(id));
     }
 
     private long nextId() {

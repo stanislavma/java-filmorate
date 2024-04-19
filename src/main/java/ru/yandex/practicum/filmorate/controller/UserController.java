@@ -16,7 +16,7 @@ import static ru.yandex.practicum.filmorate.util.ResponseUtil.respondSuccessList
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("users")
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 
@@ -43,9 +43,16 @@ public class UserController {
     @GetMapping()
     public ResponseEntity<Collection<User>> getAll() {
         log.info("Получить всех пользователей");
-        log.info("Текущее количество пользователей: " + userService.getCount());
+        log.info("Текущее количество пользователей: {}", userService.getCount());
 
         return respondSuccessList(userService.getAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getById(@PathVariable long id) {
+        log.info("Получить пользователя по {}", id);
+
+        return respondSuccess(userService.getById(id));
     }
 
     @PutMapping("/{id}/friends/{friendId}")

@@ -1,7 +1,7 @@
 # java-filmorate
 Template repository for Filmorate project.
-
-![Database ER diagram](https://github.com/stanislavma/java-filmorate/assets/144703482/70282958-1090-439b-9ba6-9b0e5475cec9)
+ 
+![dbSchema.png](src/main/resources/dbSchema.png)
 
 ### Примеры запросов для основных операций
 ###
@@ -13,7 +13,7 @@ INSERT INTO user (login, name, email, birthday) VALUES ('user_login', 'user name
 ---
 #### Добавление нового фильма
 ```postgresql 
-INSERT INTO film (name, release_date, duration, description, age_rating_id)
+INSERT INTO film (name, release_date, duration, description, mpa_id)
 VALUES ('Movie name', '2024-04-01', 120, 'Description', 1);
 ```
 ---

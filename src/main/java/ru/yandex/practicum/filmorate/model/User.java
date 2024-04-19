@@ -18,16 +18,16 @@ import java.util.Set;
 public class User {
     private Long id;
 
-    @Email
-    @NotNull
-    private String email;
-
     @NotNull
     @NotEmpty
     private String login;
 
     @Builder.Default
     private String name = "";
+
+    @Email
+    @NotNull
+    private String email;
 
     @PastOrPresent
     private LocalDate birthday;
